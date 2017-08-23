@@ -1,14 +1,7 @@
 import Note from './Note';
 
-export default class NoteRepository {
+export default interface NoteRepository {
 
-    constructor() {
-    }
+    getAll(): Array<Note>;
 
-    getAll(): Array<Note> {
-        return [
-            new Note('TITLE', 'BODY'),
-            new Note('2', 'BODY2'),
-        ];
-    }
 }
