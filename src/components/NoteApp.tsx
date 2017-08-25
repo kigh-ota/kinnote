@@ -3,6 +3,8 @@ import KintoneNoteRepositoryConfig from '../KintoneNoteRepositoryConfig';
 import KintoneNoteRepository from '../KintoneNoteRepository';
 import myConfig from '../MyConfig';
 import Note from '../Note';
+import NoteSelector from './NoteSelector';
+import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles';
 
 interface Props {
 }
@@ -28,7 +30,15 @@ export default class NoteApp extends React.PureComponent<Props, State> {
     }
 
     render() {
-        const titles = this.state.notes.map(note => (<li key={`${note.getId()}`}>{note.getTitle()}</li>));
-        return (<ul>{titles}</ul>);
+        return (
+            <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+                <div>
+                    <NoteSelector
+                        notes={this.state.notes}
+                    />
+                </div>
+            </MuiThemeProvider>
+        );
     }
+
 }
