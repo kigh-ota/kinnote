@@ -40,6 +40,10 @@ export default class Note {
         )
     }
 
+    getId(): NoteId {
+        return this.id;
+    }
+
     getTitle(): string {
         return this.title;
     }

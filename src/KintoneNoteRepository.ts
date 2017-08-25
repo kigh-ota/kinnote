@@ -13,6 +13,7 @@ export default class KintoneNoteRepository implements NoteRepository {
         this.config = config;
     }
 
+    // FIXME: should exclude deleted notes
     getAll(): Promise<Note[]> {
         const data: object = {
             app: this.config.appId,
