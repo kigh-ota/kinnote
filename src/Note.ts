@@ -1,14 +1,33 @@
 // Note Entity
 
 export default class Note {
-    private title: String;  // TODO: not to be empty
-    private body: String;
+    private id: NoteId;
+    private title: Title;
+    private body: Body;
 
-    constructor(title: String, body: String) {
+    constructor(id: NoteId, title: Title, body: Body) {
+        this.id = id;
         if (title == '') {
             throw new Error();
         }
         this.title = title;
         this.body = body;
     }
+
+    getTitle(): string {
+        return this.title;
+    }
+
+    getBody(): string {
+        return this.body;
+    }
+
+    getTags(): Tag[] {
+        return ['TAG1', 'TAG2'];
+    }
 }
+
+type NoteId = number | null;
+type Title = string;
+type Body = string;
+type Tag = string;
