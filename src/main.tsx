@@ -12,4 +12,6 @@ ReactDOM.render(
 );
 
 const repository: NoteRepository = new KintoneNoteRepository(myConfig);
-console.log(repository.getAll());
+repository.getAll().then(notes => console.log(notes));
+repository.get(1).then(note => console.log(note));
+repository.get(99999).then(note => console.log(note));

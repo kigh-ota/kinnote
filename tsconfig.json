@@ -1,5 +1,8 @@
 {
     "compilerOptions": {
+        // "es6" required for @types/sinon
+        // "dom" required for @types/react-dom
+        "lib": ["es6", "dom"],
         "jsx": "react",
         "strictNullChecks": true
     }

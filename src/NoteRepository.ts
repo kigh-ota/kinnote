@@ -2,10 +2,10 @@ import Note from './Note';
 
 export default interface NoteRepository {
 
-    getAll(): Note[];
-    get(): Note;
+    getAll(): Promise<Note[]>;
+    get(id: number): Promise<Note>;
     add(note: Note): Note;
-    update(id: number): void;
+    update(note: Note): void;
     delete(id: number): void; // logical deletion
 
 }
