@@ -39,5 +39,5 @@ describe('KintoneNoteRepository', () => {
     describe('getAll', () => {});
     describe('add', () => {});
     describe('update', () => {});
-    describe('delete', () => {});
+    describe('remove', () => {});
 });

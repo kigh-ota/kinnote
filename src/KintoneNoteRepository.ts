@@ -64,7 +64,7 @@ export default class KintoneNoteRepository implements NoteRepository {
         return;
     }
 
-    delete(id: number) : void {
+    remove(id: number) : void {
         return;
     }
 }

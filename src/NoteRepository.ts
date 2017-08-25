@@ -6,6 +6,6 @@ export default interface NoteRepository {
     get(id: number): Promise<Note>;
     add(note: Note): Note;
     update(note: Note): void;
-    delete(id: number): void; // logical deletion
+    remove(id: number): void; // logical deletion
 
 }
