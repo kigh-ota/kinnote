@@ -2,3 +2,5 @@
 /dist/
 /.idea/
 /*.iml
+
+/src/MyConfig.ts
