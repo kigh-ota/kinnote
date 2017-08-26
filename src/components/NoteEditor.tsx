@@ -23,15 +23,17 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         const bodyLines: number = note.getBodyLines();
         const contentRows: number = Math.max(6, bodyLines);
 
-        const tagChips = [
-            <Chip
-                key="chip1"
-                style={{margin: 4}}
-                labelStyle={{fontFamily: 'Monaco', fontSize: '11px'}}
-            >
-                THIS_IS_TAG
-            </Chip>
-        ];
+        const tagChips = Array.from(note.getTags()).map(tag => {
+            return (
+                <Chip
+                    key={tag}
+                    style={{margin: 4}}
+                    labelStyle={{fontFamily: 'Monaco', fontSize: '11px'}}
+                >
+                    {tag}
+                </Chip>
+            );
+        });
 
         return (
             <div

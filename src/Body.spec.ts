@@ -15,4 +15,21 @@ describe('Body', () => {
             assert.equal(new Body('あいうえお\nかきくけこ').getNumberOfLines(), 2);
         });
     });
+
+    describe('getTags', () => {
+        it('should parse unique tags', () => {
+            assertSet(new Body('').getTags(), []);
+            assertSet(new Body('#a').getTags(), ['a']);
+            assertSet(new Body('#a#').getTags(), []);
+            assertSet(new Body('#a\n#b').getTags(), ['a', 'b']);
+            assertSet(new Body('#a\n#a').getTags(), ['a']);
+        });
+
+        function assertSet<T>(set: Set<T>, values: T[]): void {
+            assert.equal(set.size, values.length);
+            values.forEach(v => {
+                assert.ok(set.has(v));
+            })
+        }
+    });
 });

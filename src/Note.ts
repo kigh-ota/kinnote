@@ -63,11 +63,11 @@ export default class Note {
         return this.deleted;
     }
 
-    getTags(): Tag[] {
-        return ['TAG1', 'TAG2'];
+    getTags(): Set<Tag> {
+        return this.body.getTags();
     }
 }
 
 type NoteId = number | null;
 type Title = string;
-type Tag = string;
+export type Tag = string;
