@@ -22,9 +22,6 @@ export default class Note {
 
     constructor(id: NoteId, title: Title, body: string, deleted: boolean) {
         this.id = id;
-        if (title == '') {
-            throw new Error();
-        }
         this.title = title;
         this.body = new Body(body);
         this.deleted = deleted;
@@ -40,6 +37,10 @@ export default class Note {
             json[Fields.BODY].value,
             json[Fields.DELETED].value.includes(Values.DELETED),
         )
+    }
+
+    static emptyNote(): Note {
+        return new Note(null, '', '', false);
     }
 
     getId(): NoteId {

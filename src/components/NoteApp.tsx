@@ -5,12 +5,15 @@ import Note from '../Note';
 import NoteSelector from './NoteSelector';
 import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles';
 import myConfig from '../MyConfig';
+import NoteService from '../NoteService';
+import NoteEditor from './NoteEditor';
 
 interface Props {
 }
 
 interface State {
     notes: Note[];
+    noteInEdit: Note;
 }
 
 export const AppStyles = {
@@ -25,15 +28,12 @@ export default class NoteApp extends React.PureComponent<Props, State> {
         super();
         this.state = {
             notes: [],
+            noteInEdit: Note.emptyNote(),
         };
 
-
-        const noteRepository = new KintoneNoteRepository(myConfig);
-        noteRepository.getAll().then(notes => {
+        NoteService.getAll().then(notes => {
             this.setState({notes: notes});
         });
-        // repository.get(1).then(note => console.log(note));
-        // repository.get(99999).then(note => console.log(note));
     }
 
     render() {
@@ -42,6 +42,12 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                 <div>
                     <NoteSelector
                         notes={this.state.notes}
+                        onSelectNote={note => {
+                            this.setState({noteInEdit: note});
+                        }}
+                    />
+                    <NoteEditor
+                        note={this.state.noteInEdit}
                     />
                 </div>
             </MuiThemeProvider>

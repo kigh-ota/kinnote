@@ -129,7 +129,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
             return (
                 <FloatingActionButton
                     style={{margin: '8px'}}
-                    onTouchTap={props.onTouchTap}
+                    onClick={props.onClick}
                     disabled={false}
                 >
                     <ContentAdd />
@@ -141,7 +141,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
             return (
                 <FloatingActionButton
                     style={{margin: '8px'}}
-                    onTouchTap={props.onTouchTap}
+                    onClick={props.onClick}
                     disabled={false}
                 >
                     <ActionToday />
@@ -164,7 +164,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 >
                     <MenuItem
                         primaryText="Delete"
-                        onTouchTap={props.onTouchTap}
+                        onClick={props.onClick}
                     />
                 </IconMenu>
             );

@@ -5,6 +5,7 @@ import {AppStyles} from './NoteApp';
 
 interface Props {
     notes: Note[],
+    onSelectNote: (note: Note) => void;
 }
 
 interface State {
@@ -30,6 +31,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     }}
                     innerDivStyle={AppStyles.textBase}
                     primaryText={note.getTitle()}
+                    onClick={this.props.onSelectNote.bind(this, note)}
                 />
             );
         });
