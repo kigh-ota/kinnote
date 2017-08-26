@@ -4,4 +4,4 @@
 $ npm install && npm run build
 ```
 
-Open index.html.
+Use dist/script.js.

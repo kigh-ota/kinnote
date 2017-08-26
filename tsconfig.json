@@ -4,6 +4,7 @@
         // "dom" required for @types/react-dom
         "lib": ["es6", "dom"],
         "jsx": "react",
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "inlineSourceMap": true
     }
 }
