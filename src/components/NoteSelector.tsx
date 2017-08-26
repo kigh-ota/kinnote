@@ -1,11 +1,11 @@
 import Note from '../Note';
 import * as React from 'react';
 import {Drawer, MenuItem, TextField} from 'material-ui';
-import {AppStyles} from './NoteApp';
+import {AppStyles, NoteState} from './NoteApp';
 
 interface Props {
-    notes: Note[],
-    onSelectNote: (note: Note) => void;
+    notes: NoteState[],
+    onSelectNote: (id: number) => void;
 }
 
 interface State {
@@ -23,15 +23,15 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         const listItems = this.props.notes.map(note => {
             return (
                 <MenuItem
-                    key={`${note.getId()}`}
+                    key={`${note.id}`}
                     className="note-list-item"
                     style={{
                         minHeight: (AppStyles.textBase.fontSize + 8) + 'px',
                         lineHeight: (AppStyles.textBase.fontSize + 8) + 'px',
                     }}
                     innerDivStyle={AppStyles.textBase}
-                    primaryText={note.getTitle()}
-                    onClick={this.props.onSelectNote.bind(this, note)}
+                    primaryText={note.title}
+                    onClick={this.props.onSelectNote.bind(this, note.id)}
                 />
             );
         });

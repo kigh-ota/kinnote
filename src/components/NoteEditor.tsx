@@ -7,9 +7,15 @@ import {
 import {grey500, white, yellow100} from 'material-ui/styles/colors';
 import {AppStyles} from './NoteApp';
 import {ContentAdd, ActionToday, NavigationMoreVert} from 'material-ui/svg-icons';
+import TitleInput from './TitleInput';
+import BodyInput from './BodyInput';
 
 interface Props {
-    note: Note,
+    id: number | null;
+    title: string;
+    body: string;
+    onChangeTitle: (title: string) => void;
+    onChangeBody: (body: string) => void;
 }
 
 interface State {
@@ -18,10 +24,7 @@ interface State {
 export default class NoteEditor extends React.PureComponent<Props, State> {
 
     render() {
-        const note = this.props.note;
-
-        const bodyLines: number = note.getBodyLines();
-        const contentRows: number = Math.max(6, bodyLines);
+        const note = new Note(this.props.id, this.props.title, this.props.body, false);
 
         const tagChips = Array.from(note.getTags()).map(tag => {
             return (
@@ -49,28 +52,15 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         display: 'flex',
                         backgroundColor: note.getId() ? white : yellow100,
                     }}>
-                        <TextField
-                            name="titleInput"
-                            className="note-title-input"
-                            style={Object.assign(
-                                {},
-                                {margin: '8px'},
-                                AppStyles.textBase
-                            )}
-                            hintText="Title"
-                            underlineShow={false}
-                            fullWidth={true}
-                            value={note.getTitle()}
-                            onChange={(e: Object, newValue: string) => {
-                                this.setState({
-                                    title: newValue,
-                                    modified: true,
-                                });
-                            }}
+                        <TitleInput
+                            value={this.props.title}
+                            onChange={this.props.onChangeTitle}
                         />
                         {note.getId() && <DeleteMenu />}
                     </div>
+
                     <Divider/>
+
                     <div style={{
                         display: 'flex',
                         flexWrap: 'wrap',
@@ -78,52 +68,30 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     }}>
                         {tagChips}
                     </div>
-                    <Divider/>
-                    <TextField
-                        name="contentInput"
-                        className="note-content-input"
-                        style={Object.assign({}, {
-                            margin: '8px',
-                            lineHeight: '1.4em',
-                        }, AppStyles.textBase)}
-                        hintText="Content"
-                        underlineShow={false}
-                        multiLine={true}
-                        rows={contentRows}
-                        rowsMax={contentRows}
-                        fullWidth={true}
-                        value={note.getBody()}
 
-                    />
                     <Divider/>
+
+                    <BodyInput
+                        value={this.props.body}
+                        onChange={this.props.onChangeBody}
+                    />
+
+                    <Divider/>
+
                     <div style={{width: '100%', display: 'flex'}}>
                         <NewNoteButton/>
                         <NewNoteTodayButton/>
                     </div>
                 </Paper>
+
                 <Snackbar
                     open={false}
                     message="Note saved."
                     autoHideDuration={2500}
                     onRequestClose={() => {this.setState({autoSaveNotify: false});}}
                 />
-                <div style={Object.assign({}, AppStyles.textBase, {
-                    width: '100%',
-                    height: 20,
-                    position: 'fixed',
-                    right: 5,
-                    bottom: 5,
-                    textAlign: 'right',
-                    fontSize: '10px',
-                    color: grey500,
-                })}>
-                    {
-                        1
-                        // `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`
-                        // + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`
-                        // + `(${bodyLines} lines)`
-                    }
-                </div>
+
+                <CursorStatus/>
             </div>
         );
 
@@ -169,6 +137,28 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         onClick={props.onClick}
                     />
                 </IconMenu>
+            );
+        }
+
+        function CursorStatus() {
+            return (
+                <div style={Object.assign({}, AppStyles.textBase, {
+                    width: '100%',
+                    height: 20,
+                    position: 'fixed',
+                    right: 5,
+                    bottom: 5,
+                    textAlign: 'right',
+                    fontSize: '10px',
+                    color: grey500,
+                })}>
+                    {
+                        1
+                        // `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`
+                        // + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`
+                        // + `(${bodyLines} lines)`
+                    }
+                </div>
             );
         }
     }

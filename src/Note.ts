@@ -55,10 +55,6 @@ export default class Note {
         return this.body.getValue();
     }
 
-    getBodyLines(): number {
-        return this.body.getNumberOfLines();
-    }
-
     isDeleted(): boolean {
         return this.deleted;
     }
