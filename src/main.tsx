@@ -3,10 +3,6 @@ import * as ReactDOM from 'react-dom';
 
 import NoteApp from './components/NoteApp';
 
-declare namespace kintone.events {
-    function on(event: string, handler: Function): void;
-}
-
 (() => {
     kintone.events.on('app.record.index.show', (event: any) => {
         // reset all elements

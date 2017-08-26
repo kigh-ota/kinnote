@@ -4,7 +4,6 @@ import KintoneNoteRepositoryConfig from './KintoneNoteRepositoryConfig';
 
 const DUMMY_NOTE: Note = new Note(1, 'title', 'body', false);
 
-// TODO 1.implement
 export default class KintoneNoteRepository implements NoteRepository {
 
     private config: KintoneNoteRepositoryConfig;
@@ -37,23 +36,7 @@ export default class KintoneNoteRepository implements NoteRepository {
     // returns json
     // VisibleForTesting
     jsonRequest(path: string, method: 'GET' | 'POST', data: any): Promise<any> {
-        const uri: string = `https://${this.config.cybozuHost}${path}.json`;
-        const headers = new Headers();
-        headers.append('Host', this.config.cybozuHost + ':443');
-        headers.append('Content-Type', 'application/json');
-        headers.append('X-Cybozu-Authorization', this.config.xCybozuAuthorization);
-        headers.append('X-HTTP-Method-Override', method);
-        const fetchData: RequestInit = {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: headers,
-        };
-        return fetch(uri, fetchData)
-            .then(r => r.json())
-            .catch(r => {
-                console.log(`jsonRequest ERROR: ${path}`);
-                throw new Error(r);
-            });
+        return kintone.api(path, method, data);
     }
 
     add(note: Note): Note {
