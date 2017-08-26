@@ -4,7 +4,7 @@
   "description": "note-taking app using kintone for data persistence",
   "main": "dist/script.js",
   "scripts": {
-    "build": "browserify ./src/main.tsx -p [ tsify --noImplicitAny ] > ./dist/script.js",
+    "build": "browserify ./src/main.tsx -p [ tsify --noImplicitAny ] > ./dist/script.js && cp ./dist/script.js ~/Dropbox/note.js",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
   "keywords": [
