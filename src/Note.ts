@@ -1,6 +1,8 @@
 // Note Entity
 
 
+import Body from './Body';
+
 const Fields: any = {
     ID: '$id',
     TITLE: 'title',
@@ -18,13 +20,13 @@ export default class Note {
     private body: Body;
     private deleted: boolean;
 
-    constructor(id: NoteId, title: Title, body: Body, deleted: boolean) {
+    constructor(id: NoteId, title: Title, body: string, deleted: boolean) {
         this.id = id;
         if (title == '') {
             throw new Error();
         }
         this.title = title;
-        this.body = body;
+        this.body = new Body(body);
         this.deleted = deleted;
     }
 
@@ -49,7 +51,11 @@ export default class Note {
     }
 
     getBody(): string {
-        return this.body;
+        return this.body.getValue();
+    }
+
+    getBodyLines(): number {
+        return this.body.getNumberOfLines();
     }
 
     isDeleted(): boolean {
@@ -63,5 +69,4 @@ export default class Note {
 
 type NoteId = number | null;
 type Title = string;
-type Body = string;
 type Tag = string;

@@ -1,6 +1,7 @@
 import Note from '../Note';
 import * as React from 'react';
 import {Drawer, MenuItem, TextField} from 'material-ui';
+import {AppStyles} from './NoteApp';
 
 interface Props {
     notes: Note[],
@@ -8,13 +9,6 @@ interface Props {
 
 interface State {
 }
-
-const AppStyles = {
-    textBase: {
-        fontFamily: 'Monaco, monospace',
-        fontSize: 12,
-    }
-};
 
 export default class NoteSelector extends React.PureComponent<Props, State> {
 

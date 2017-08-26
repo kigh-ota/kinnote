@@ -1,10 +1,10 @@
 import * as React from 'react';
 import KintoneNoteRepositoryConfig from '../KintoneNoteRepositoryConfig';
 import KintoneNoteRepository from '../KintoneNoteRepository';
-import myConfig from '../MyConfig';
 import Note from '../Note';
 import NoteSelector from './NoteSelector';
 import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles';
+import myConfig from '../MyConfig';
 
 interface Props {
 }
@@ -12,6 +12,13 @@ interface Props {
 interface State {
     notes: Note[];
 }
+
+export const AppStyles = {
+    textBase: {
+        fontFamily: 'Monaco, monospace',
+        fontSize: 12,
+    }
+};
 
 export default class NoteApp extends React.PureComponent<Props, State> {
     constructor() {
