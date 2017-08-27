@@ -12,6 +12,8 @@ const DUMMY_JSON = {
         'title': {value: TITLE},
         'body': {value: BODY},
         'deleted': {value: []},
+        'createdAt': {value: '2017-08-27T15:57:00Z'},
+        'updatedAt': {value: '2017-08-27T15:57:00Z'},
     }
 };
 

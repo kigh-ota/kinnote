@@ -46,7 +46,7 @@ export default class NoteService {
         const map: Map<number, string> = new Map();
         this.cache
             .filter(note => note.matchWord(filterValue || ''))
-            .sort(Note.compareFunction(sortType))
+            .sort((a, b) => Note.compare(a, b, sortType))
             .forEach(note => {
                 map.set(note.getId() as number, note.getTitle());
             });
@@ -65,7 +65,18 @@ export default class NoteService {
         const note = this.noteInCache(id);
         note.setTitle(title);
         note.setBody(body);
-        this.repository.update(note);   // FIXME
+        this.repository.update(note);   // FIXME to use cache
+    }
+
+    public add(title: string, body: string): void {
+        this.repository.add(new Note(null, title, body, false, null, null)).then(noteId => {
+            if (noteId === null) {
+                throw new Error();
+            }
+            return this.repository.get(noteId);
+        }).then(note => {
+            this.cache.push(note);
+        });    // FIXME to use cache
     }
 
     private noteInCache(id: number): Note {

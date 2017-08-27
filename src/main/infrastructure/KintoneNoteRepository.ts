@@ -1,6 +1,6 @@
-import Note, {NoteId} from '../domain/model/Note';
 import NoteRepository from '../domain/model/NoteRepository';
 import KintoneNoteRepositoryConfig from './KintoneNoteRepositoryConfig';
+import Note, {NoteId} from '../domain/model/Note';
 
 const DUMMY_NOTE: Note = new Note(1, 'title', 'body', false, null, null);
 
@@ -14,11 +14,12 @@ export default class KintoneNoteRepository implements NoteRepository {
         this.config = config;
     }
 
-    // FIXME: should exclude deleted notes
+    // FIXME: get more than 500 notes
     getAll(): Promise<Note[]> {
         const data: object = {
             app: this.config.appId,
             totalCount: true,
+            query: `${Fields.DELETED} not in ("${Values.DELETED}") limit 500`,
             // fields: ['$id', Fields.TITLE, Fields.BODY, Fields.DELETED, "created_time", "dropdown"]
         };
         return this.jsonRequest('/k/v1/records', 'GET', data)
@@ -94,8 +95,8 @@ export default class KintoneNoteRepository implements NoteRepository {
             json[Fields.TITLE].value,
             json[Fields.BODY].value,
             json[Fields.DELETED].value.includes(Values.DELETED),
-            json[Fields.CREATED_AT].value,
-            json[Fields.UPDATED_AT].value,
+            new Date(json[Fields.CREATED_AT].value),
+            new Date(json[Fields.UPDATED_AT].value),
         )
     }
 }

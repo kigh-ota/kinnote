@@ -22,10 +22,6 @@ export default class Note {
         this.deleted = deleted;
     }
 
-    static emptyNote(): Note {
-        return new Note(null, '', '', false, null, null);
-    }
-
     getId(): NoteId {
         return this.id;
     }
@@ -77,12 +73,12 @@ export default class Note {
         return Array.from(this.getTags()).some(tag => tag.toLocaleLowerCase().indexOf(word.toLocaleLowerCase()) !== -1);
     }
 
-    static compareFunction(sortType: SortType): ((a: Note, b: Note) => number) {
+    static compare(a: Note, b: Note, sortType: SortType): number {
         if (sortType === SortType.ALPHABETICAL) {
-            return (a, b) => a.title.localeCompare(b.title);
+            return a.title.localeCompare(b.title);
         }
         else if (sortType === SortType.UPDATE_TIME) {
-            return (a, b) => - Timestamp.compare(a.updatedAt, b.updatedAt);
+            return Timestamp.compare(a.updatedAt, b.updatedAt);
         }
         else {
             throw new Error();

@@ -17,6 +17,7 @@ interface Props {
 interface State {
     title: string;
     body: string;
+    showSaveNotifier: boolean,
 }
 
 export default class NoteEditor extends React.PureComponent<Props, State> {
@@ -29,6 +30,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         this.state = {
             title: '',
             body: '',
+            showSaveNotifier: false,
         };
     }
 
@@ -42,7 +44,11 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
     private save(): void {
         if (this.props.id !== null) {
             this.noteService.update(this.props.id, this.state.title, this.state.body);
+        } else {
+            this.noteService.add(this.state.title, this.state.body);
+            // TODO: update NoteSelector & reopen added note
         }
+        this.setState({showSaveNotifier: true});
     }
 
     render() {
@@ -118,9 +124,10 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 </Paper>
 
                 <Snackbar
-                    open={false}
+                    open={this.state.showSaveNotifier}
                     message="Note saved."
                     autoHideDuration={2500}
+                    onRequestClose={() => {this.setState({showSaveNotifier: false});}}
                 />
 
                 <CursorStatus/>
