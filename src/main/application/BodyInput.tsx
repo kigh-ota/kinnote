@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {TextField} from 'material-ui';
 import {AppStyles} from './NoteApp';
-import Body from '../Body';
+import Body from '../domain/model/Body';
 
 interface Props {
     value: string;

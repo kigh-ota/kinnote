@@ -1,11 +1,11 @@
 import * as React from 'react';
-import Note from '../Note';
+import Note from '../domain/model/Note';
 import NoteSelector from './NoteSelector';
 import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles';
-import NoteService from '../NoteService';
+import NoteService from '../domain/model/NoteService';
 import NoteEditor from './NoteEditor';
 import update = require('immutability-helper');
-import Timestamp from '../Timestamp';
+import Timestamp from '../domain/model/Timestamp';
 
 export const AppStyles = {
     textBase: {

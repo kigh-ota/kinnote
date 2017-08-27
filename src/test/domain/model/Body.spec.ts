@@ -1,4 +1,4 @@
-import Body from './Body';
+import Body from '../../../main/domain/model/Body';
 import * as assert from 'assert';
 
 describe('Body', () => {

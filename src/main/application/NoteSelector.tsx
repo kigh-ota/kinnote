@@ -1,10 +1,10 @@
-import Note, {Tag} from '../Note';
+import Note, {Tag} from '../domain/model/Note';
 import * as React from 'react';
 import {Drawer, IconButton, MenuItem, TextField} from 'material-ui';
 import {AppStyles, NoteState} from './NoteApp';
 import {AvSortByAlpha, ContentClear} from 'material-ui/svg-icons';
-import Body from '../Body';
-import Timestamp from '../Timestamp';
+import Body from '../domain/model/Body';
+import Timestamp from '../domain/model/Timestamp';
 import {colors} from 'material-ui/styles';
 
 interface Props {

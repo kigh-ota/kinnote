@@ -1,6 +1,6 @@
 import Note from './Note';
-import KintoneNoteRepository from './KintoneNoteRepository';
-import myConfig from './MyConfig';
+import KintoneNoteRepository from '../../infrastructure/KintoneNoteRepository';
+import myConfig from '../../MyConfig';
 
 // TODO: add test
 // TODO: DI

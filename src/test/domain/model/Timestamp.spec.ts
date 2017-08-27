@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import Timestamp from './Timestamp';
+import Timestamp from '../../../main/domain/model/Timestamp';
 
 describe('Timestamp', () => {
     describe('compare', () => {

@@ -4,19 +4,6 @@
 import Body from './Body';
 import Timestamp, {TimestampValue} from './Timestamp';
 
-const Fields: any = {
-    ID: '$id',
-    TITLE: 'title',
-    BODY: 'body',
-    DELETED: 'deleted',
-    CREATED_AT: 'createdAt',
-    UPDATED_AT: 'updatedAt',
-};
-
-const Values: any = {
-    DELETED: 'deleted',
-};
-
 export default class Note {
     private id: NoteId;
     private title: Title;
@@ -32,20 +19,6 @@ export default class Note {
         this.createdAt = new Timestamp(createdAt);
         this.updatedAt = new Timestamp(updatedAt);
         this.deleted = deleted;
-    }
-
-    static fromJson(json: any): Note {
-        if (Object.keys(Fields).some((key: string) => !json.hasOwnProperty(Fields[key]))) {
-            throw new Error('Json does not contain a required field.');
-        }
-        return new Note(
-            parseInt(json[Fields.ID].value, 10),
-            json[Fields.TITLE].value,
-            json[Fields.BODY].value,
-            json[Fields.DELETED].value.includes(Values.DELETED),
-            json[Fields.CREATED_AT].value,
-            json[Fields.UPDATED_AT].value,
-        )
     }
 
     static emptyNote(): Note {
@@ -81,6 +54,6 @@ export default class Note {
     }
 }
 
-type NoteId = number | null;
+export type NoteId = number | null;
 type Title = string;
 export type Tag = string;

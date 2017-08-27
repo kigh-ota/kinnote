@@ -1,7 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import NoteApp from './components/NoteApp';
+import NoteApp from './application/NoteApp';
+
+// TODO: list tags
+// TODO: resize NoteSelector
 
 (() => {
     kintone.events.on('app.record.index.show', (event: any) => {

@@ -1,6 +1,6 @@
-import KintoneNoteRepository from './KintoneNoteRepository';
+import KintoneNoteRepository from '../../main/infrastructure/KintoneNoteRepository';
 import * as assert from 'assert';
-import KintoneNoteRepositoryConfig from './KintoneNoteRepositoryConfig';
+import KintoneNoteRepositoryConfig from '../../main/infrastructure/KintoneNoteRepositoryConfig';
 import * as sinon from 'sinon';
 
 const ID = 99;

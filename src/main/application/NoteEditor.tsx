@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Note from '../Note';
+import Note from '../domain/model/Note';
 import {
     Chip, Divider, FloatingActionButton, IconButton, IconMenu, MenuItem, Paper, Snackbar,
     TextField
