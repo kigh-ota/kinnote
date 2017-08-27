@@ -1,14 +1,13 @@
-import Note, {Tag} from '../domain/model/Note';
+import {Tag} from '../domain/model/Note';
 import * as React from 'react';
 import {Drawer, IconButton, MenuItem, TextField} from 'material-ui';
 import {AppStyles, NoteState, NoteStateId} from './NoteApp';
 import {AvSortByAlpha, ContentClear} from 'material-ui/svg-icons';
 import Body from '../domain/model/Body';
-import Timestamp from '../domain/model/Timestamp';
 import {colors} from 'material-ui/styles';
 
 interface Props {
-    notes: NoteState[],
+    idTitleMap: Map<number, string>,
     selectedId: NoteStateId,
     onSelectNote: (id: number) => void;
 }
@@ -51,25 +50,27 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
     }
 
     render() {
-        const filteredNotes = this.props.notes.filter(note => this.applyFilter(note));
+        // const filteredNotes = this.props.notes.filter(note => this.applyFilter(note));
         const alphaSort: boolean = this.state.sortType === NoteSortType.ALPHABETICAL;
-        const sortedNotes = alphaSort
-            ? filteredNotes.sort((a, b) => a.title.localeCompare(b.title))
-            : filteredNotes.sort((a, b) => - Timestamp.compare(a.updatedAt, b.updatedAt));
+        // const sortedNotes = alphaSort
+        //     ? filteredNotes.sort((a, b) => a.title.localeCompare(b.title))
+        //     : filteredNotes.sort((a, b) => - Timestamp.compare(a.updatedAt, b.updatedAt));
 
-        const listItems = sortedNotes.map(note => {
-            return (
+        // const listItems = sortedNotes.map(note => {
+        let listItems: any[] = [];
+        this.props.idTitleMap.forEach((title, id) => {
+            listItems.push(
                 <MenuItem
-                    key={`${note.id}`}
+                    key={id}
                     className="note-list-item"
                     style={{
                         minHeight: (AppStyles.textBase.fontSize + 8) + 'px',
                         lineHeight: (AppStyles.textBase.fontSize + 8) + 'px',
-                        backgroundColor: note.id === this.props.selectedId ? colors.blue200 : colors.white,
+                        backgroundColor: id === this.props.selectedId ? colors.blue200 : colors.white,
                     }}
                     innerDivStyle={AppStyles.textBase}
-                    primaryText={note.title}
-                    onClick={this.props.onSelectNote.bind(this, note.id)}
+                    primaryText={title}
+                    onClick={this.props.onSelectNote.bind(this, id)}
                 />
             );
         });

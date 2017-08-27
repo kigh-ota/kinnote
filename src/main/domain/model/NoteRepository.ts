@@ -1,11 +1,11 @@
 import Note, {NoteId} from './Note';
 
-export default interface NoteRepository {
+export default abstract class NoteRepository {
 
-    getAll(): Promise<Note[]>;
-    get(id: number): Promise<Note>;
-    add(note: Note): Promise<NoteId>;
-    update(note: Note): Promise<void>;
-    deleteLogically(id: number): Promise<void>;
+    abstract getAll(): Promise<Note[]>;
+    abstract get(id: number): Promise<Note>;
+    abstract add(note: Note): Promise<NoteId>;
+    abstract update(note: Note): Promise<void>;
+    abstract deleteLogically(id: number): Promise<void>;
 
 }

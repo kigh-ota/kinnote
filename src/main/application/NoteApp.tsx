@@ -18,8 +18,8 @@ interface Props {
 }
 
 interface State {
-    notes: NoteState[];
-    noteInEdit: NoteState;
+    noteIdInEdit: NoteStateId;
+    idTitleMap: Map<number, string>;
 }
 
 export type NoteStateId = number | null;
@@ -44,28 +44,22 @@ function toNoteState(note: Note): NoteState {
 }
 
 export default class NoteApp extends React.PureComponent<Props, State> {
+
+    private noteService: NoteService;
+
+    private noteEditor: NoteEditor;
+
     constructor() {
         super();
+        this.noteService = NoteService.getInstance();
         this.state = {
-            notes: [],
-            noteInEdit: toNoteState(Note.emptyNote()),
+            noteIdInEdit: null,
+            idTitleMap: new Map(),
         };
 
-        NoteService.getAll().then(notes => {
-            this.setState({notes: notes.map(note => toNoteState(note))});
+        this.noteService.init().then(() => {
+            this.setState({idTitleMap: this.noteService.getIdTitleMap()});
         });
-    }
-
-
-    private getNoteStateById(id: NoteStateId): NoteState {
-        if (id === null) {
-            throw new Error();
-        }
-        const note = this.state.notes.find((note: NoteState) => note.id === id);
-        if (note === undefined) {
-            throw new Error();
-        }
-        return note;
     }
 
     render() {
@@ -73,22 +67,16 @@ export default class NoteApp extends React.PureComponent<Props, State> {
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
                 <div>
                     <NoteSelector
-                        notes={this.state.notes}
-                        selectedId={this.state.noteInEdit.id}
+                        idTitleMap={this.state.idTitleMap}
+                        selectedId={this.state.noteIdInEdit}
                         onSelectNote={id => {
-                            this.setState({noteInEdit: this.getNoteStateById(id)});
+                            this.setState({noteIdInEdit: id});
+                            this.noteEditor.open(id);
                         }}
                     />
                     <NoteEditor
-                        id={this.state.noteInEdit.id}
-                        title={this.state.noteInEdit.title}
-                        body={this.state.noteInEdit.body}
-                        onChangeTitle={newTitle => {
-                            this.setState(update(this.state, {noteInEdit: {title: {$set: newTitle}}}));
-                        }}
-                        onChangeBody={newBody => {
-                            this.setState(update(this.state, {noteInEdit: {body: {$set: newBody}}}));
-                        }}
+                        id={this.state.noteIdInEdit}
+                        ref={(node: NoteEditor) => { this.noteEditor = node; }}
                     />
                 </div>
             </MuiThemeProvider>

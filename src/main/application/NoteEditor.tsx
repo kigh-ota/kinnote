@@ -1,30 +1,46 @@
 import * as React from 'react';
 import Note from '../domain/model/Note';
 import {
-    Chip, Divider, FloatingActionButton, IconButton, IconMenu, MenuItem, Paper, Snackbar,
-    TextField
+    Chip, Divider, FloatingActionButton, IconButton, IconMenu, MenuItem, Paper, Snackbar
 } from 'material-ui';
 import {grey500, white, yellow100} from 'material-ui/styles/colors';
 import {AppStyles} from './NoteApp';
 import {ContentAdd, ActionToday, NavigationMoreVert} from 'material-ui/svg-icons';
 import TitleInput from './TitleInput';
 import BodyInput from './BodyInput';
+import NoteService from '../domain/model/NoteService';
 
 interface Props {
     id: number | null;
-    title: string;
-    body: string;
-    onChangeTitle: (title: string) => void;
-    onChangeBody: (body: string) => void;
 }
 
 interface State {
+    title: string;
+    body: string;
 }
 
 export default class NoteEditor extends React.PureComponent<Props, State> {
 
+    private noteService: NoteService;
+
+    constructor() {
+        super();
+        this.noteService = NoteService.getInstance();
+        this.state = {
+            title: '',
+            body: '',
+        };
+    }
+
+    open(id: number) {
+        this.setState({
+            title: this.noteService.getTitle(id),
+            body: this.noteService.getBody(id),
+        });
+    }
+
     render() {
-        const note = new Note(this.props.id, this.props.title, this.props.body, false, null, null);
+        const note = new Note(this.props.id, this.state.title, this.state.body, false, null, null);
 
         const tagChips = Array.from(note.getTags()).map(tag => {
             return (
@@ -53,8 +69,10 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         backgroundColor: note.getId() ? white : yellow100,
                     }}>
                         <TitleInput
-                            value={this.props.title}
-                            onChange={this.props.onChangeTitle}
+                            value={this.state.title}
+                            onChange={newTitle => {
+                                this.setState({title: newTitle});
+                            }}
                         />
                         {note.getId() && <DeleteMenu />}
                     </div>
@@ -72,8 +90,10 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     <Divider/>
 
                     <BodyInput
-                        value={this.props.body}
-                        onChange={this.props.onChangeBody}
+                        value={this.state.body}
+                        onChange={newBody => {
+                            this.setState({body: newBody});
+                        }}
                     />
 
                     <Divider/>
@@ -88,7 +108,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     open={false}
                     message="Note saved."
                     autoHideDuration={2500}
-                    onRequestClose={() => {this.setState({autoSaveNotify: false});}}
                 />
 
                 <CursorStatus/>
