@@ -24,7 +24,7 @@ interface State {
 export default class NoteEditor extends React.PureComponent<Props, State> {
 
     render() {
-        const note = new Note(this.props.id, this.props.title, this.props.body, false);
+        const note = new Note(this.props.id, this.props.title, this.props.body, false, null, null);
 
         const tagChips = Array.from(note.getTags()).map(tag => {
             return (

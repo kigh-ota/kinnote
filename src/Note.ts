@@ -2,12 +2,15 @@
 
 
 import Body from './Body';
+import Timestamp, {TimestampValue} from './Timestamp';
 
 const Fields: any = {
     ID: '$id',
     TITLE: 'title',
     BODY: 'body',
     DELETED: 'deleted',
+    CREATED_AT: 'createdAt',
+    UPDATED_AT: 'updatedAt',
 };
 
 const Values: any = {
@@ -18,12 +21,16 @@ export default class Note {
     private id: NoteId;
     private title: Title;
     private body: Body;
+    private createdAt: Timestamp;
+    private updatedAt: Timestamp;
     private deleted: boolean;
 
-    constructor(id: NoteId, title: Title, body: string, deleted: boolean) {
+    constructor(id: NoteId, title: Title, body: string, deleted: boolean, createdAt: TimestampValue, updatedAt: TimestampValue) {
         this.id = id;
         this.title = title;
         this.body = new Body(body);
+        this.createdAt = new Timestamp(createdAt);
+        this.updatedAt = new Timestamp(updatedAt);
         this.deleted = deleted;
     }
 
@@ -36,11 +43,13 @@ export default class Note {
             json[Fields.TITLE].value,
             json[Fields.BODY].value,
             json[Fields.DELETED].value.includes(Values.DELETED),
+            json[Fields.CREATED_AT].value,
+            json[Fields.UPDATED_AT].value,
         )
     }
 
     static emptyNote(): Note {
-        return new Note(null, '', '', false);
+        return new Note(null, '', '', false, null, null);
     }
 
     getId(): NoteId {
@@ -53,6 +62,14 @@ export default class Note {
 
     getBody(): string {
         return this.body.getValue();
+    }
+
+    getCreatedAt(): Timestamp {
+        return this.createdAt;
+    }
+
+    getUpdatedAt(): Timestamp {
+        return this.updatedAt;
     }
 
     isDeleted(): boolean {

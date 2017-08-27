@@ -5,6 +5,7 @@ import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles'
 import NoteService from '../NoteService';
 import NoteEditor from './NoteEditor';
 import update = require('immutability-helper');
+import Timestamp from '../Timestamp';
 
 export const AppStyles = {
     textBase: {
@@ -28,6 +29,8 @@ export interface NoteState {
     id: NoteStateId;
     title: string;
     body: string;
+    createdAt: Timestamp,
+    updatedAt: Timestamp,
 }
 
 function toNoteState(note: Note): NoteState {
@@ -35,6 +38,8 @@ function toNoteState(note: Note): NoteState {
         id: note.getId(),
         title: note.getTitle(),
         body: note.getBody(),
+        createdAt: note.getCreatedAt(),
+        updatedAt: note.getUpdatedAt(),
     };
 }
 

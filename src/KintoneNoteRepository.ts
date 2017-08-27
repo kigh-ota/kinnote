@@ -2,7 +2,7 @@ import Note from './Note';
 import NoteRepository from './NoteRepository';
 import KintoneNoteRepositoryConfig from './KintoneNoteRepositoryConfig';
 
-const DUMMY_NOTE: Note = new Note(1, 'title', 'body', false);
+const DUMMY_NOTE: Note = new Note(1, 'title', 'body', false, null, null);
 
 export default class KintoneNoteRepository implements NoteRepository {
 
