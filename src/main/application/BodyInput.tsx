@@ -6,6 +6,7 @@ import Body from '../domain/model/Body';
 interface Props {
     value: string;
     onChange: (body: string) => void;
+    onChangeSelectionStates: (start: number, end: number) => void;
 }
 
 interface State {
@@ -33,6 +34,13 @@ export default class BodyInput extends React.PureComponent<Props, State> {
                 value={this.props.value}
                 onChange={(e: Object, newValue: string) => {
                     this.props.onChange(newValue)
+                }}
+                onKeyUp={(e: any) => {
+                    this.props.onChangeSelectionStates(e.target.selectionStart, e.target.selectionEnd);
+                }}
+                onMouseUp={(e: any) => {
+                    // @types/material-ui needs to be modified to use this handler!
+                    this.props.onChangeSelectionStates(e.target.selectionStart, e.target.selectionEnd);
                 }}
             />
         );

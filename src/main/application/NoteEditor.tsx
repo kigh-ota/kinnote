@@ -17,6 +17,8 @@ interface Props {
 interface State {
     title: string;
     body: string;
+    selectionStart: number,
+    selectionEnd: number,
     showSaveNotifier: boolean,
 }
 
@@ -30,6 +32,8 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         this.state = {
             title: '',
             body: '',
+            selectionStart: 0,
+            selectionEnd: 0,
             showSaveNotifier: false,
         };
     }
@@ -113,7 +117,12 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         onChange={newBody => {
                             this.setState({body: newBody});
                         }}
+                        onChangeSelectionStates={(start: number, end: number) => {
+                            this.setState({selectionStart: start});
+                            this.setState({selectionEnd: end});
+                        }}
                     />
+
 
                     <Divider/>
 
@@ -130,7 +139,23 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     onRequestClose={() => {this.setState({showSaveNotifier: false});}}
                 />
 
-                <CursorStatus/>
+                <div style={Object.assign({}, AppStyles.textBase, {
+                    width: '100%',
+                    height: 20,
+                    position: 'fixed',
+                    right: 5,
+                    bottom: 5,
+                    textAlign: 'right',
+                    fontSize: '10px',
+                    color: grey500,
+                })}>
+                    {
+                        `${this.state.selectionStart}:${this.state.selectionEnd}`
+                        // `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`
+                        // + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`
+                        // + `(${bodyLines} lines)`
+                    }
+                </div>
             </div>
         );
 
@@ -176,28 +201,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         onClick={props.onClick}
                     />
                 </IconMenu>
-            );
-        }
-
-        function CursorStatus() {
-            return (
-                <div style={Object.assign({}, AppStyles.textBase, {
-                    width: '100%',
-                    height: 20,
-                    position: 'fixed',
-                    right: 5,
-                    bottom: 5,
-                    textAlign: 'right',
-                    fontSize: '10px',
-                    color: grey500,
-                })}>
-                    {
-                        1
-                        // `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`
-                        // + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`
-                        // + `(${bodyLines} lines)`
-                    }
-                </div>
             );
         }
     }
