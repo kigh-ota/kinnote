@@ -1,7 +1,7 @@
 import Note, {Tag} from '../domain/model/Note';
 import * as React from 'react';
 import {Drawer, IconButton, MenuItem, TextField} from 'material-ui';
-import {AppStyles, NoteState} from './NoteApp';
+import {AppStyles, NoteState, NoteStateId} from './NoteApp';
 import {AvSortByAlpha, ContentClear} from 'material-ui/svg-icons';
 import Body from '../domain/model/Body';
 import Timestamp from '../domain/model/Timestamp';
@@ -9,6 +9,7 @@ import {colors} from 'material-ui/styles';
 
 interface Props {
     notes: NoteState[],
+    selectedId: NoteStateId,
     onSelectNote: (id: number) => void;
 }
 
@@ -64,6 +65,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     style={{
                         minHeight: (AppStyles.textBase.fontSize + 8) + 'px',
                         lineHeight: (AppStyles.textBase.fontSize + 8) + 'px',
+                        backgroundColor: note.id === this.props.selectedId ? colors.blue200 : colors.white,
                     }}
                     innerDivStyle={AppStyles.textBase}
                     primaryText={note.title}

@@ -22,7 +22,7 @@ interface State {
     noteInEdit: NoteState;
 }
 
-type NoteStateId = number | null;
+export type NoteStateId = number | null;
 
 // Use this object type instead of the original Note entity class to make state as simple as possible.
 export interface NoteState {
@@ -74,6 +74,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                 <div>
                     <NoteSelector
                         notes={this.state.notes}
+                        selectedId={this.state.noteInEdit.id}
                         onSelectNote={id => {
                             this.setState({noteInEdit: this.getNoteStateById(id)});
                         }}
