@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import NoteApp from './application/NoteApp';
+import NoteService from './domain/model/NoteService';
 
 // TODO: list tags
 // TODO: resize NoteSelector
@@ -16,6 +17,8 @@ import NoteApp from './application/NoteApp';
         const container: Element  = document.createElement('DIV');
         body.appendChild(container);
 
-        ReactDOM.render(<NoteApp />, container);
+        NoteService.getInstance().init().then(() => {
+            ReactDOM.render(<NoteApp/>, container);
+        });
     });
 })();

@@ -19,7 +19,6 @@ interface Props {
 
 interface State {
     noteIdInEdit: NoteStateId;
-    idTitleMap: Map<number, string>;
 }
 
 export type NoteStateId = number | null;
@@ -54,12 +53,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
         this.noteService = NoteService.getInstance();
         this.state = {
             noteIdInEdit: null,
-            idTitleMap: new Map(),
         };
-
-        this.noteService.init().then(() => {
-            this.setState({idTitleMap: this.noteService.getIdTitleMap()});
-        });
     }
 
     render() {
@@ -67,7 +61,6 @@ export default class NoteApp extends React.PureComponent<Props, State> {
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
                 <div>
                     <NoteSelector
-                        idTitleMap={this.state.idTitleMap}
                         selectedId={this.state.noteIdInEdit}
                         onSelectNote={id => {
                             this.setState({noteIdInEdit: id});

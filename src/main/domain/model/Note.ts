@@ -3,6 +3,7 @@
 
 import Body from './Body';
 import Timestamp, {TimestampValue} from './Timestamp';
+import {SortType} from './NoteService';
 
 export default class Note {
     private id: NoteId;
@@ -51,6 +52,33 @@ export default class Note {
 
     getTags(): Set<Tag> {
         return this.body.getTags();
+    }
+
+    matchWord(word: string): boolean {
+        if (word === '') {
+            return true;    // no filter
+        }
+        return this.titleMatchWord(word) || this.tagsMatchWord(word);
+    }
+
+    private titleMatchWord(word: string): boolean {
+        return this.getTitle().toLocaleLowerCase().indexOf(word.toLocaleLowerCase()) !== -1;
+    }
+
+    private tagsMatchWord(word: string): boolean {
+        return Array.from(this.getTags()).some(tag => tag.toLocaleLowerCase().indexOf(word.toLocaleLowerCase()) !== -1);
+    }
+
+    static compareFunction(sortType: SortType): ((a: Note, b: Note) => number) {
+        if (sortType === SortType.ALPHABETICAL) {
+            return (a, b) => a.title.localeCompare(b.title);
+        }
+        else if (sortType === SortType.UPDATE_TIME) {
+            return (a, b) => - Timestamp.compare(a.updatedAt, b.updatedAt);
+        }
+        else {
+            throw new Error();
+        }
     }
 }
 

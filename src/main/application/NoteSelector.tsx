@@ -3,62 +3,39 @@ import * as React from 'react';
 import {Drawer, IconButton, MenuItem, TextField} from 'material-ui';
 import {AppStyles, NoteState, NoteStateId} from './NoteApp';
 import {AvSortByAlpha, ContentClear} from 'material-ui/svg-icons';
-import Body from '../domain/model/Body';
 import {colors} from 'material-ui/styles';
+import {default as NoteService, SortType} from '../domain/model/NoteService';
 
 interface Props {
-    idTitleMap: Map<number, string>,
     selectedId: NoteStateId,
     onSelectNote: (id: number) => void;
 }
 
-enum NoteSortType {
-    UPDATE_TIME,
-    ALPHABETICAL,
-}
-
 interface State {
+    idTitleMap: Map<number, string>,
     filterInputValue: string;
-    sortType: NoteSortType;
+    sortType: SortType;
 }
 
 export default class NoteSelector extends React.PureComponent<Props, State> {
 
+    private noteService: NoteService;
+
     constructor() {
         super();
+        this.noteService = NoteService.getInstance();
+        const INITIAL_SORT_TYPE: SortType = SortType.UPDATE_TIME;
         this.state = {
+            idTitleMap: this.noteService.getIdTitleMap(INITIAL_SORT_TYPE),
             filterInputValue: '',
-            sortType: NoteSortType.UPDATE_TIME
+            sortType: INITIAL_SORT_TYPE,
         };
     }
 
-    private applyFilter(note: NoteState): boolean {
-        if (this.state.filterInputValue === '') {
-            return true;    // no filter
-        }
-        return this.matchTitle(note) || this.matchTags(note);
-    }
-
-    // TODO: move to Note class
-    private matchTitle(note: NoteState): boolean {
-        return note.title.toLocaleLowerCase().indexOf(this.state.filterInputValue.toLocaleLowerCase()) !== -1;
-    }
-
-    private matchTags(note: NoteState): boolean {
-        const tags: Set<Tag> = new Body(note.body).getTags();
-        return Array.from(tags).some(tag => tag.toLocaleLowerCase().indexOf(this.state.filterInputValue.toLocaleLowerCase()) !== -1);
-    }
-
     render() {
-        // const filteredNotes = this.props.notes.filter(note => this.applyFilter(note));
-        const alphaSort: boolean = this.state.sortType === NoteSortType.ALPHABETICAL;
-        // const sortedNotes = alphaSort
-        //     ? filteredNotes.sort((a, b) => a.title.localeCompare(b.title))
-        //     : filteredNotes.sort((a, b) => - Timestamp.compare(a.updatedAt, b.updatedAt));
-
-        // const listItems = sortedNotes.map(note => {
+        const alphaSort: boolean = this.state.sortType === SortType.ALPHABETICAL;
         let listItems: any[] = [];
-        this.props.idTitleMap.forEach((title, id) => {
+        this.state.idTitleMap.forEach((title, id) => {
             listItems.push(
                 <MenuItem
                     key={id}
@@ -96,7 +73,11 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                         hintText="Filter"
                         value={this.state.filterInputValue}
                         onChange={(e: Object, newValue: string) => {
-                            this.setState({filterInputValue: newValue});
+                            const newIdTitleMap = this.noteService.getIdTitleMap(this.state.sortType, newValue);
+                            this.setState({
+                                filterInputValue: newValue,
+                                idTitleMap: newIdTitleMap,
+                            });
                         }}
                     />
                     <IconButton
@@ -115,7 +96,12 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     </IconButton>
                     <IconButton
                         onClick={() => {
-                            this.setState({sortType: alphaSort ? NoteSortType.UPDATE_TIME : NoteSortType.ALPHABETICAL});
+                            const newSortType: SortType = alphaSort ? SortType.UPDATE_TIME : SortType.ALPHABETICAL;
+                            const newIdTitleMap = this.noteService.getIdTitleMap(newSortType, this.state.filterInputValue);
+                            this.setState({
+                                sortType: newSortType,
+                                idTitleMap: newIdTitleMap
+                            });
                         }}
                         iconStyle={{
                             width: buttonIconSize,

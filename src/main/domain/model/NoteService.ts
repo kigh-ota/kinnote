@@ -3,6 +3,11 @@ import KintoneNoteRepository from '../../infrastructure/KintoneNoteRepository';
 import myConfig from '../../MyConfig';
 import NoteRepository from './NoteRepository';
 
+export enum SortType {
+    UPDATE_TIME,
+    ALPHABETICAL,
+}
+
 // TODO: add test
 // TODO: DI
 export default class NoteService {
@@ -30,11 +35,14 @@ export default class NoteService {
         });
     }
 
-    public getIdTitleMap(): Map<number, string> {
+    public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, string> {
         const map: Map<number, string> = new Map();
-        this.cache.forEach(note => {
-            map.set(note.getId() as number, note.getTitle());
-        });
+        this.cache
+            .filter(note => note.matchWord(filterValue || ''))
+            .sort(Note.compareFunction(sortType))
+            .forEach(note => {
+                map.set(note.getId() as number, note.getTitle());
+            });
         return map;
     }
 
