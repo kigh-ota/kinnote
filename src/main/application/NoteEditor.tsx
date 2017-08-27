@@ -39,6 +39,12 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         });
     }
 
+    private save(): void {
+        if (this.props.id !== null) {
+            this.noteService.update(this.props.id, this.state.title, this.state.body);
+        }
+    }
+
     render() {
         const note = new Note(this.props.id, this.state.title, this.state.body, false, null, null);
 
@@ -56,7 +62,14 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
 
         return (
             <div
-                className="note-editor" style={{ marginLeft: '250px' }}
+                className="note-editor"
+                style={{ marginLeft: '250px' }}
+                onKeyDown={(e: any) => {
+                    // Ctrl+S
+                    if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
+                        this.save();
+                    }
+                }}
             >
                 <Paper
                     zDepth={1}

@@ -6,6 +6,8 @@ import NoteService from './domain/model/NoteService';
 
 // TODO: list tags
 // TODO: resize NoteSelector
+// TODO: measure code coverage
+// TODO: save sort type
 
 (() => {
     kintone.events.on('app.record.index.show', (event: any) => {

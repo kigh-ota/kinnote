@@ -15,8 +15,8 @@ export default class Note {
 
     constructor(id: NoteId, title: Title, body: string, deleted: boolean, createdAt: TimestampValue, updatedAt: TimestampValue) {
         this.id = id;
-        this.title = title;
-        this.body = new Body(body);
+        this.setTitle(title);
+        this.setBody(body);
         this.createdAt = new Timestamp(createdAt);
         this.updatedAt = new Timestamp(updatedAt);
         this.deleted = deleted;
@@ -34,8 +34,16 @@ export default class Note {
         return this.title;
     }
 
+    setTitle(title: string): void {
+        this.title = title;
+    }
+
     getBody(): string {
         return this.body.getValue();
+    }
+
+    setBody(body: string): void {
+        this.body = new Body(body);
     }
 
     getCreatedAt(): Timestamp {

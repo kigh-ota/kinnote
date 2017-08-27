@@ -35,6 +35,13 @@ export default class NoteService {
         });
     }
 
+    public flush(): Promise<void> {
+        // TODO
+        return Promise.resolve();
+    }
+
+    // cache-only operations below
+
     public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, string> {
         const map: Map<number, string> = new Map();
         this.cache
@@ -47,19 +54,26 @@ export default class NoteService {
     }
 
     public getTitle(id: number): string {
-        const note = this.cache.find(note => note.getId() === id);
-        if (!note) {
-            throw new Error();
-        }
-        return note.getTitle();
+        return this.noteInCache(id).getTitle();
     }
 
     public getBody(id: number): string {
+        return this.noteInCache(id).getBody();
+    }
+
+    public update(id: number, title: string, body: string): void {
+        const note = this.noteInCache(id);
+        note.setTitle(title);
+        note.setBody(body);
+        this.repository.update(note);   // FIXME
+    }
+
+    private noteInCache(id: number): Note {
         const note = this.cache.find(note => note.getId() === id);
         if (!note) {
             throw new Error();
         }
-        return note.getBody();
+        return note;
     }
 }
 
