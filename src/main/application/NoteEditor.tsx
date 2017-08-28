@@ -57,8 +57,10 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
 
     public save(flushAll: boolean): void {
         if (this.props.id !== null) {
-            this.noteService.update(this.props.id, this.state.title, this.state.body);
-            this.props.onUpdateNote();
+            const anyChangesMade = this.noteService.update(this.props.id, this.state.title, this.state.body);
+            if (anyChangesMade) {
+                this.props.onUpdateNote();
+            }
         } else {
             this.noteService.add(this.state.title, this.state.body).then(id => {
                 if (id !== null) {

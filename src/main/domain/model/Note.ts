@@ -54,6 +54,10 @@ export default class Note {
         return this.deleted;
     }
 
+    setDeleted(deleted: boolean): void {
+        this.deleted = deleted;
+    }
+
     getTags(): Set<Tag> {
         return this.body.getTags();
     }

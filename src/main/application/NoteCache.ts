@@ -2,8 +2,8 @@ import Note from '../domain/model/Note';
 
 type NoteCacheItem = {
     note: Note;
-    modified: boolean;
-    deleted: boolean;
+    needsUpdate: boolean;
+    needsDeletion: boolean;
 }
 
 export default class NoteCache {
@@ -25,7 +25,7 @@ export default class NoteCache {
 
     public getAllNotDeleted(): Note[] {
         return this.items
-            .filter(item => !item.deleted)
+            .filter(item => !item.note.isDeleted())
             .map(item => item.note);
     }
 
@@ -35,45 +35,60 @@ export default class NoteCache {
         }
         this.items.push({
             note: note,
-            modified: false,
-            deleted: false,
+            needsUpdate: false,
+            needsDeletion: false,
         });
     }
 
-    public update(id: number, title: string, body: string): void {
+    // returns if any changes are made
+    public update(id: number, title: string, body: string): boolean {
+        let ret: boolean = false;
         const item = this.getItem(id);
         if (item.note.getTitle() !== title) {
             item.note.setTitle(title);
-            item.modified = true;
+            item.needsUpdate = true;
+            ret = true;
         }
         if (item.note.getBody() !== body) {
             item.note.setBody(body);
-            item.modified = true;
+            item.needsUpdate = true;
+            ret = true;
         }
+        return ret;
     }
 
     public remove(id: number): void {
-        this.getItem(id).deleted = true;
-    }
-
-    public isModified(id: number): boolean {
-        return this.getItem(id).modified;
-    }
-
-    public isDeleted(id: number): boolean {
-        return this.getItem(id).deleted;
-    }
-
-    public resetFlags(id: number): void {
         const item = this.getItem(id);
-        item.deleted = false;
-        item.modified = false;
+        if (item.note.isDeleted()) {
+            throw new Error();
+        }
+        item.note.setDeleted(true);
+        item.needsDeletion = true;
+    }
+
+    public isDirty(id: number): boolean {
+        const item = this.getItem(id);
+        return item.needsUpdate || item.needsDeletion;
+    }
+
+    public needsUpdate(id: number): boolean {
+        return this.getItem(id).needsUpdate && !this.getItem(id).needsDeletion;
+    }
+
+    public needsDeletion(id: number): boolean {
+        return this.getItem(id).needsDeletion;
+    }
+
+    public setClean(id: number): void {
+        const item = this.getItem(id);
+        item.needsUpdate = false;
+        item.needsDeletion = false;
     }
 
     private getItem(id: number): NoteCacheItem {
         const item = this.items.find(item => item.note.getId() === id);
         if (!item) {
-            throw new Error();
+            throw new Error(`id = ${id} does not exist in cache`);
         }
         return item;
     }

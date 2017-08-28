@@ -44,23 +44,15 @@ export default class NoteService {
             if (id === null) {
                 throw new Error();
             }
-            if (this.cache.isDeleted(id)) {
-                this.log(`delete id=${id}`);
-                this.cache.resetFlags(id);
-                promises.push(this.repository.deleteLogically(id));
-            }
-            else if (this.cache.isModified(id)) {
-                this.log(`update id=${id}`);
-                this.cache.resetFlags(id);
-                promises.push(
-                    this.repository.update(note).then(() => {
-                        this.repository.get(id).then(note => {
-
-                        })
-                }));
-            }
-            else {
-                // this.log(`no change for id=${id}`);
+            if (this.cache.isDirty(id)) {
+                if (this.cache.needsDeletion(id)) {
+                    this.log(`delete id=${id}`);
+                    promises.push(this.repository.deleteLogically(id).then(() => { this.cache.setClean(id); }));
+                }
+                else if (this.cache.needsUpdate(id)) {
+                    this.log(`update id=${id}`);
+                    promises.push(this.repository.update(note).then(() => { this.cache.setClean(id); }));
+                }
             }
         });
         return Promise.all(promises);
@@ -82,13 +74,19 @@ export default class NoteService {
         }); // TODO handle error (e.g., when title is duplicated)
     }
 
-    public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, string> {
-        const map: Map<number, string> = new Map();
+    public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, {title: string, modified: boolean, deleted: boolean}> {
+
+        const map: Map<number, {title: string, modified: boolean, deleted: boolean}> = new Map();
         this.cache.getAllNotDeleted()
             .filter(note => note.matchWord(filterValue || ''))
             .sort((a, b) => Note.compare(a, b, sortType))
             .forEach(note => {
-                map.set(note.getId() as number, note.getTitle());
+                const id = note.getId() as number;
+                map.set(id, {
+                    title: note.getTitle(),
+                    modified: this.cache.needsUpdate(id),
+                    deleted: this.cache.needsDeletion(id),
+                });
             });
         return map;
     }
@@ -101,8 +99,8 @@ export default class NoteService {
         return this.cache.get(id).getBody();
     }
 
-    public update(id: number, title: string, body: string): void {
-        this.cache.update(id, title, body);
+    public update(id: number, title: string, body: string): boolean {
+        return this.cache.update(id, title, body);
     }
 
     public remove(id: number): void {

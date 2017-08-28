@@ -18,15 +18,15 @@ describe('NoteCache', () => {
         assert.deepStrictEqual(actual, note);
     });
 
-    describe('delete', () => {
+    describe('remove', () => {
         it('should turn on the flag', () => {
             const sut = new NoteCache();
             const ID = 1;
             const note = new Note(ID, 'TITLE', 'BODY', false, null, null);
             sut.add(note);
-            assert.equal(sut.isDeleted(ID), false);
+            assert.equal(sut.needsDeletion(ID), false);
             sut.remove(ID);
-            assert.equal(sut.isDeleted(ID), true);
+            assert.equal(sut.needsDeletion(ID), true);
         });
     });
 
@@ -36,14 +36,26 @@ describe('NoteCache', () => {
             const ID = 1;
             const note = new Note(ID, 'TITLE', 'BODY', false, null, null);
             sut.add(note);
-            assert.equal(sut.isModified(ID), false);
+            assert.equal(sut.needsUpdate(ID), false);
             sut.update(ID, 'TITLE2', 'BODY2');
-            assert.equal(sut.isModified(ID), true);
-            assert.equal(sut.isDeleted(ID), false);
+            assert.equal(sut.needsUpdate(ID), true);
+            assert.equal(sut.needsDeletion(ID), false);
             const actual = sut.get(ID);
             assert.equal(actual.getTitle(), 'TITLE2');
             assert.equal(actual.getBody(),'BODY2');
-        })
+        });
     });
 
+    describe('needsUpdate', () => {
+        it('should always return false when needsDeletion is true', () => {
+            const sut = new NoteCache();
+            const ID = 1;
+            const note = new Note(ID, 'TITLE', 'BODY', false, null, null);
+            sut.add(note);
+            sut.update(ID, 'TITLE2', 'BODY2');
+            sut.remove(ID);
+            assert.equal(sut.needsUpdate(ID), false);
+            assert.equal(sut.needsDeletion(ID), true);
+        });
+    });
 });

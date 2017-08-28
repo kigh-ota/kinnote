@@ -12,7 +12,7 @@ interface Props {
 }
 
 interface State {
-    idTitleMap: Map<number, string>,
+    idTitleMap: Map<number, {title: string, modified: boolean, deleted: boolean}>,
     filterInputValue: string;
     sortType: SortType;
 }
@@ -52,9 +52,9 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                         backgroundColor: id === this.props.selectedId ? colors.blue200 : colors.white,
                     }}
                     innerDivStyle={AppStyles.textBase}
-                    primaryText={title}
+                    primaryText={title.title}
                     onClick={this.props.onSelectNote.bind(this, id)}
-                    title={`${id}: ${title}`}
+                    title={`${id}: ${title.title}`}
                 />
             );
         });
