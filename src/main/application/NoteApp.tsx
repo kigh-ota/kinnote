@@ -66,6 +66,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         ref={(node: NoteSelector) => { this.noteSelector = node; }}
                         selectedId={this.state.noteIdInEdit}
                         onSelectNote={id => {
+                            this.noteEditor.save(false);
                             this.setState({noteIdInEdit: id});
                             this.noteEditor.open(id);
                         }}
@@ -79,6 +80,11 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         onAddNote={(id: number) => {
                             this.noteSelector.updateList();
                             this.setState({noteIdInEdit: id});
+                        }}
+                        onDeleteNote={() => {
+                            this.noteSelector.updateList();
+                            this.setState({noteIdInEdit: null});
+                            this.noteEditor.openNewNote();
                         }}
                     />
                 </div>

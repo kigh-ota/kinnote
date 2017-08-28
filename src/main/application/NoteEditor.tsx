@@ -14,6 +14,7 @@ interface Props {
     id: number | null;
     onUpdateNote: () => void;
     onAddNote: (id: number) => void;
+    onDeleteNote: () => void;
 }
 
 interface State {
@@ -47,24 +48,40 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         });
     }
 
-    private save(): void {
+    openNewNote() {
+        this.setState({
+            title: '',
+            body: '',
+        });
+    }
+
+    public save(flushAll: boolean): void {
         if (this.props.id !== null) {
             this.noteService.update(this.props.id, this.state.title, this.state.body);
-            this.noteService.flush().then(ary => {
-                if (ary.length > 0) {
-                    this.props.onUpdateNote();  // update NoteSelector
-                    this.setState({showSaveNotifier: true});
-                }
-            });
+            this.props.onUpdateNote();
         } else {
             this.noteService.add(this.state.title, this.state.body).then(id => {
                 if (id !== null) {
                     this.props.onAddNote(id);   // update NoteSelector and reopen note
                     this.setState({showSaveNotifier: true});
                 }
-            })
+            });
         }
+        if (flushAll) {
+            this.noteService.flush().then(ary => {
+                if (ary.length > 0) {
+                    this.setState({showSaveNotifier: true});
+                }
+            });
+        }
+    }
 
+    private deleteNoteCache(): void {
+        if (this.props.id === null) {
+            throw new Error();
+        }
+        this.noteService.remove(this.props.id);
+        this.props.onDeleteNote();
     }
 
     render() {
@@ -89,7 +106,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 onKeyDown={(e: any) => {
                     // Ctrl+S
                     if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
-                        this.save();
+                        this.save(true);
                     }
                 }}
             >
@@ -109,7 +126,12 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                                 this.setState({title: newTitle});
                             }}
                         />
-                        {note.getId() && <DeleteMenu />}
+                        {note.getId() && <DeleteMenu
+                            onClick={() => {
+                                this.deleteNoteCache();
+                            }}
+                        />}
+
                     </div>
 
                     <Divider/>
@@ -146,7 +168,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
 
                 <Snackbar
                     open={this.state.showSaveNotifier}
-                    message="Note saved."
+                    message="Note(s) saved."
                     autoHideDuration={2500}
                     onRequestClose={() => {this.setState({showSaveNotifier: false});}}
                 />

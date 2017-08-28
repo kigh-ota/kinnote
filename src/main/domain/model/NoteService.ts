@@ -84,7 +84,7 @@ export default class NoteService {
 
     public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, string> {
         const map: Map<number, string> = new Map();
-        this.cache.getAll()
+        this.cache.getAllNotDeleted()
             .filter(note => note.matchWord(filterValue || ''))
             .sort((a, b) => Note.compare(a, b, sortType))
             .forEach(note => {

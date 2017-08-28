@@ -19,7 +19,14 @@ export default class NoteCache {
     }
 
     public getAll(): Note[] {
-        return this.items.map(item => item.note);
+        return this.items
+            .map(item => item.note);
+    }
+
+    public getAllNotDeleted(): Note[] {
+        return this.items
+            .filter(item => !item.deleted)
+            .map(item => item.note);
     }
 
     public add(note: Note): void {
