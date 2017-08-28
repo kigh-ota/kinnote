@@ -54,6 +54,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     innerDivStyle={AppStyles.textBase}
                     primaryText={title}
                     onClick={this.props.onSelectNote.bind(this, id)}
+                    title={`${id}: ${title}`}
                 />
             );
         });
