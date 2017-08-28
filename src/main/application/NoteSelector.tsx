@@ -32,6 +32,12 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         };
     }
 
+    updateList() {
+        const newIdTitleMap = this.noteService.getIdTitleMap(this.state.sortType, this.state.filterInputValue);
+        console.log('updateList', newIdTitleMap);
+        this.setState({idTitleMap: newIdTitleMap});
+    }
+
     render() {
         const alphaSort: boolean = this.state.sortType === SortType.ALPHABETICAL;
         let listItems: any[] = [];

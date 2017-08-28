@@ -2,6 +2,7 @@ import Note, {NoteId} from './Note';
 import KintoneNoteRepository from '../../infrastructure/KintoneNoteRepository';
 import myConfig from '../../MyConfig';
 import NoteRepository from './NoteRepository';
+import NoteCache from '../../application/NoteCache';
 
 export enum SortType {
     UPDATE_TIME,
@@ -12,12 +13,12 @@ export enum SortType {
 // TODO: DI
 export default class NoteService {
 
-    private cache: Note[];
+    private cache: NoteCache;
 
     private repository: NoteRepository;
 
     private constructor() {
-        this.cache = [];
+        this.cache = new NoteCache();
         this.repository = new KintoneNoteRepository(myConfig);
     }
 
@@ -30,21 +31,60 @@ export default class NoteService {
 
     public init(): Promise<void> {
         return this.repository.getAll().then(notes => {
-            this.cache = notes;
-            return;
+            notes.forEach(note => {
+                this.cache.add(note);
+            });
         });
     }
 
-    public flush(): Promise<void> {
-        // TODO
-        return Promise.resolve();
+    public flush(): Promise<any> {
+        let promises: Promise<any>[] = [];
+        this.cache.getAll().forEach(note => {
+            const id = note.getId();
+            if (id === null) {
+                throw new Error();
+            }
+            if (this.cache.isDeleted(id)) {
+                this.log(`delete id=${id}`);
+                this.cache.resetFlags(id);
+                promises.push(this.repository.deleteLogically(id));
+            }
+            else if (this.cache.isModified(id)) {
+                this.log(`update id=${id}`);
+                this.cache.resetFlags(id);
+                promises.push(
+                    this.repository.update(note).then(() => {
+                        this.repository.get(id).then(note => {
+
+                        })
+                }));
+            }
+            else {
+                // this.log(`no change for id=${id}`);
+            }
+        });
+        return Promise.all(promises);
     }
 
-    // cache-only operations below
+    public add(title: string, body: string): Promise<number | null> {
+        if (title === '') {
+            return Promise.resolve(null);
+        }
+        // flush immediately
+        return this.repository.add(new Note(null, title, body, false, null, null)).then(noteId => {
+            if (noteId === null) {
+                throw new Error();
+            }
+            return this.repository.get(noteId);
+        }).then(note => {
+            this.cache.add(note);
+            return note.getId() as number;
+        }); // TODO handle error (e.g., when title is duplicated)
+    }
 
     public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, string> {
         const map: Map<number, string> = new Map();
-        this.cache
+        this.cache.getAll()
             .filter(note => note.matchWord(filterValue || ''))
             .sort((a, b) => Note.compare(a, b, sortType))
             .forEach(note => {
@@ -54,37 +94,23 @@ export default class NoteService {
     }
 
     public getTitle(id: number): string {
-        return this.noteInCache(id).getTitle();
+        return this.cache.get(id).getTitle();
     }
 
     public getBody(id: number): string {
-        return this.noteInCache(id).getBody();
+        return this.cache.get(id).getBody();
     }
 
     public update(id: number, title: string, body: string): void {
-        const note = this.noteInCache(id);
-        note.setTitle(title);
-        note.setBody(body);
-        this.repository.update(note);   // FIXME to use cache
+        this.cache.update(id, title, body);
     }
 
-    public add(title: string, body: string): void {
-        this.repository.add(new Note(null, title, body, false, null, null)).then(noteId => {
-            if (noteId === null) {
-                throw new Error();
-            }
-            return this.repository.get(noteId);
-        }).then(note => {
-            this.cache.push(note);
-        });    // FIXME to use cache
+    public remove(id: number): void {
+        this.cache.remove(id);
     }
 
-    private noteInCache(id: number): Note {
-        const note = this.cache.find(note => note.getId() === id);
-        if (!note) {
-            throw new Error();
-        }
-        return note;
+    private log(...optionalParams: any[]) {
+        console.log.apply(this, [this.constructor.name].concat(optionalParams));
     }
 }
 

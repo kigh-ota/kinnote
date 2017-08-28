@@ -46,6 +46,8 @@ export default class NoteApp extends React.PureComponent<Props, State> {
 
     private noteService: NoteService;
 
+    private noteSelector: NoteSelector;
+
     private noteEditor: NoteEditor;
 
     constructor() {
@@ -61,6 +63,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
                 <div>
                     <NoteSelector
+                        ref={(node: NoteSelector) => { this.noteSelector = node; }}
                         selectedId={this.state.noteIdInEdit}
                         onSelectNote={id => {
                             this.setState({noteIdInEdit: id});
@@ -68,8 +71,15 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         }}
                     />
                     <NoteEditor
-                        id={this.state.noteIdInEdit}
                         ref={(node: NoteEditor) => { this.noteEditor = node; }}
+                        id={this.state.noteIdInEdit}
+                        onUpdateNote={() => {
+                            this.noteSelector.updateList();
+                        }}
+                        onAddNote={(id: number) => {
+                            this.noteSelector.updateList();
+                            this.setState({noteIdInEdit: id});
+                        }}
                     />
                 </div>
             </MuiThemeProvider>

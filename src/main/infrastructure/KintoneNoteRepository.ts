@@ -2,8 +2,6 @@ import NoteRepository from '../domain/model/NoteRepository';
 import KintoneNoteRepositoryConfig from './KintoneNoteRepositoryConfig';
 import Note, {NoteId} from '../domain/model/Note';
 
-const DUMMY_NOTE: Note = new Note(1, 'title', 'body', false, null, null);
-
 type HttpMethod = 'GET'|'POST'|'PUT'|'DELETE';
 
 export default class KintoneNoteRepository implements NoteRepository {

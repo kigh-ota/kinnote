@@ -12,6 +12,8 @@ import NoteService from '../domain/model/NoteService';
 
 interface Props {
     id: number | null;
+    onUpdateNote: () => void;
+    onAddNote: (id: number) => void;
 }
 
 interface State {
@@ -48,11 +50,21 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
     private save(): void {
         if (this.props.id !== null) {
             this.noteService.update(this.props.id, this.state.title, this.state.body);
+            this.noteService.flush().then(ary => {
+                if (ary.length > 0) {
+                    this.props.onUpdateNote();  // update NoteSelector
+                    this.setState({showSaveNotifier: true});
+                }
+            });
         } else {
-            this.noteService.add(this.state.title, this.state.body);
-            // TODO: update NoteSelector & reopen added note
+            this.noteService.add(this.state.title, this.state.body).then(id => {
+                if (id !== null) {
+                    this.props.onAddNote(id);   // update NoteSelector and reopen note
+                    this.setState({showSaveNotifier: true});
+                }
+            })
         }
-        this.setState({showSaveNotifier: true});
+
     }
 
     render() {
