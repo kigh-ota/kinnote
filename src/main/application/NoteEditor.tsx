@@ -29,6 +29,8 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
 
     private noteService: NoteService;
 
+    private bodyInput: BodyInput;
+
     constructor() {
         super();
         this.noteService = NoteService.getInstance();
@@ -149,16 +151,20 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     <Divider/>
 
                     <BodyInput
+                        ref={(input: BodyInput) => { this.bodyInput = input; }}
                         value={this.state.body}
-                        onChange={newBody => {
-                            this.setState({body: newBody});
-                        }}
-                        onChangeSelectionStates={(start: number, end: number) => {
-                            this.setState({selectionStart: start});
-                            this.setState({selectionEnd: end});
+                        onChange={(newValue: string, newSelectionStart: number, newSelectionEnd: number) => {
+                            // The cursor position needs to be updated again,
+                            // because it is automatically changed after settings states.
+                            //
+                            this.setState({
+                                body: newValue,
+                                selectionStart: newSelectionStart,
+                                selectionEnd: newSelectionEnd,
+                            }, this.bodyInput.forceSelectionStates.bind(this.bodyInput, newSelectionStart, newSelectionEnd));
+                            return;
                         }}
                     />
-
 
                     <Divider/>
 
