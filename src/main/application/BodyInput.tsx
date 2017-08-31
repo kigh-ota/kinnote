@@ -21,6 +21,16 @@ export default class BodyInput extends React.PureComponent<Props, State> {
         this.props.onChange(ret.updated, pos - ret.numRemove, pos - ret.numRemove);
     }
 
+    private removeBullet(pos: number, line: LineInfo): void {
+        const newContent = this.props.value.substring(0, pos - line.bullet.length) + this.props.value.substring(pos);
+        this.props.onChange(newContent, pos - line.bullet.length, pos - line.bullet.length);
+    }
+
+    private insert(str: string, pos: number): void {
+        const newContent: string = this.props.value.substring(0, pos) + str + this.props.value.substring(pos);
+        this.props.onChange(newContent, pos + str.length, pos + str.length);
+    }
+
     private handleKeyDown(e: KeyboardEvent): void {
         const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
         if (target.selectionStart !== target.selectionEnd) {
@@ -54,6 +64,39 @@ export default class BodyInput extends React.PureComponent<Props, State> {
                     e.preventDefault();
                     this.unindent(pos);
                 }
+            }
+        }
+    }
+
+    private handleKeyPress(e: KeyboardEvent): void {
+        const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
+        if (target.selectionStart !== target.selectionEnd) {
+            return;
+        }
+        const pos = target.selectionStart;
+        if (e.key === 'Enter') {
+            const line = StringUtil.getLineInfo(pos, this.props.value);
+            debugger;
+            if (line.col === line.str.length) { // if the cursor is at the end of line
+                if (line.str.length === line.indent && line.indent > 0) {   // indent only and not empty
+                    e.preventDefault();
+                    this.unindent(pos);
+                } else if (line.bullet && line.str.length === line.indent + line.bullet.length) { // bullet (+ indent) only
+                    e.preventDefault();
+                    this.removeBullet(pos, line);
+                }
+            } else if (line.col >= line.indent + line.bullet.length) {
+                // when the cursor is after the indent and bullet (if exists)
+                // => continues indent and bullet (if exists)
+                e.preventDefault();
+                const strInsert: string = '\n' + ' '.repeat(line.indent) + line.bullet;
+                this.insert(strInsert, pos);
+            } else if (line.bullet && line.col === line.indent) {
+                // when the cursor is between indent and bullet
+                // => continues only the indent
+                e.preventDefault();
+                const strInsert: string = '\n' + ' '.repeat(line.indent);
+                this.insert(strInsert, pos);
             }
         }
     }
@@ -93,6 +136,7 @@ export default class BodyInput extends React.PureComponent<Props, State> {
                     this.props.onChange(newValueRep, newSelectionStart, newSelectionEnd);
                 }}
                 onKeyDown={this.handleKeyDown.bind(this)}
+                onKeyPress={this.handleKeyPress.bind(this)}
                 onKeyUp={(e: any) => {
                     this.props.onChange(this.props.value, e.target.selectionStart, e.target.selectionEnd);
                 }}
