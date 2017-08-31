@@ -31,73 +31,95 @@ export default class BodyInput extends React.PureComponent<Props, State> {
         this.props.onChange(newContent, pos + str.length, pos + str.length);
     }
 
-    private handleKeyDown(e: KeyboardEvent): void {
+    private handleTabKeyDown(e: KeyboardEvent) {
         const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
+        e.preventDefault();
         if (target.selectionStart !== target.selectionEnd) {
             // text selected
             const posStart = target.selectionStart;
             const posEnd = target.selectionEnd;
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                if (!e.shiftKey) {   // Tab
-                    const ret = StringUtil.increaseIndentRange(this.props.value, posStart, posEnd);
-                    this.props.onChange(ret.updated, posStart + ret.numAddStart, posEnd + ret.numAddEnd);
-                } else {   // Shift+Tab
-                    const ret = StringUtil.decreaseIndentRange(this.props.value, posStart, posEnd);
-                    this.props.onChange(ret.updated, posStart - ret.numRemoveStart, posEnd - ret.numRemoveStart);
-                }
-            }
+            const ret = StringUtil.increaseIndentRange(this.props.value, posStart, posEnd);
+            this.props.onChange(ret.updated, posStart + ret.numAddStart, posEnd + ret.numAddEnd);
         } else {
             // no text selected
             const pos = target.selectionStart;
-            if (e.key === 'Tab') {
+            const ret = StringUtil.increaseIndent(this.props.value, pos);
+            this.props.onChange(ret.updated, pos + ret.numAdd, pos + ret.numAdd);
+        }
+    }
+
+    private handleShiftTabKeyDown(e: KeyboardEvent): void {
+        const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
+        e.preventDefault();
+        if (target.selectionStart !== target.selectionEnd) {
+            // text selected
+            const posStart = target.selectionStart;
+            const posEnd = target.selectionEnd;
+            const ret = StringUtil.decreaseIndentRange(this.props.value, posStart, posEnd);
+            this.props.onChange(ret.updated, posStart - ret.numRemoveStart, posEnd - ret.numRemoveStart);
+        } else {
+            // no text selected
+            const pos = target.selectionStart;
+            this.unindent(pos)
+        }
+    }
+
+    private handleBackspaceKeyDown(e: KeyboardEvent) {
+        const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
+        if (target.selectionStart === target.selectionEnd) {
+            const pos = target.selectionStart;
+            const line = StringUtil.getLineInfo(pos, this.props.value);
+            if (line.indent > 0 && 0 < line.col && line.col <= line.indent) {
                 e.preventDefault();
-                if (!e.shiftKey) {  // Tab
-                    const ret = StringUtil.increaseIndent(this.props.value, pos);
-                    this.props.onChange(ret.updated, pos + ret.numAdd, pos + ret.numAdd);
-                } else {    // Shift+Tab
-                    this.unindent(pos)
-                }
-            } else if (e.key === 'Backspace') { // BS
-                const line = StringUtil.getLineInfo(pos, this.props.value);
-                if (line.indent > 0 && 0 < line.col && line.col <= line.indent) {
-                    e.preventDefault();
-                    this.unindent(pos);
-                }
+                this.unindent(pos);
             }
         }
     }
 
-    private handleKeyPress(e: KeyboardEvent): void {
+    private handleKeyDown(e: KeyboardEvent): void {
+        if (e.key === 'Tab' && e.shiftKey) {
+            this.handleShiftTabKeyDown(e);
+        } else if (e.key === 'Tab' && !e.shiftKey) {
+            this.handleTabKeyDown(e);
+        } else if (e.key === 'Backspace') {
+            this.handleBackspaceKeyDown(e);
+        }
+    }
+
+    private handleEnterKeyPress(e: KeyboardEvent) {
         const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
         if (target.selectionStart !== target.selectionEnd) {
             return;
         }
         const pos = target.selectionStart;
-        if (e.key === 'Enter') {
-            const line = StringUtil.getLineInfo(pos, this.props.value);
-            debugger;
-            if (line.col === line.str.length) { // if the cursor is at the end of line
-                if (line.str.length === line.indent && line.indent > 0) {   // indent only and not empty
-                    e.preventDefault();
-                    this.unindent(pos);
-                } else if (line.bullet && line.str.length === line.indent + line.bullet.length) { // bullet (+ indent) only
-                    e.preventDefault();
-                    this.removeBullet(pos, line);
-                }
-            } else if (line.col >= line.indent + line.bullet.length) {
-                // when the cursor is after the indent and bullet (if exists)
-                // => continues indent and bullet (if exists)
+        const line = StringUtil.getLineInfo(pos, this.props.value);
+        debugger;
+        if (line.col === line.str.length) { // if the cursor is at the end of line
+            if (line.str.length === line.indent && line.indent > 0) {   // indent only and not empty
                 e.preventDefault();
-                const strInsert: string = '\n' + ' '.repeat(line.indent) + line.bullet;
-                this.insert(strInsert, pos);
-            } else if (line.bullet && line.col === line.indent) {
-                // when the cursor is between indent and bullet
-                // => continues only the indent
+                this.unindent(pos);
+            } else if (line.bullet && line.str.length === line.indent + line.bullet.length) { // bullet (+ indent) only
                 e.preventDefault();
-                const strInsert: string = '\n' + ' '.repeat(line.indent);
-                this.insert(strInsert, pos);
+                this.removeBullet(pos, line);
             }
+        } else if (line.col >= line.indent + line.bullet.length) {
+            // when the cursor is after the indent and bullet (if exists)
+            // => continues indent and bullet (if exists)
+            e.preventDefault();
+            const strInsert: string = '\n' + ' '.repeat(line.indent) + line.bullet;
+            this.insert(strInsert, pos);
+        } else if (line.bullet && line.col === line.indent) {
+            // when the cursor is between indent and bullet
+            // => continues only the indent
+            e.preventDefault();
+            const strInsert: string = '\n' + ' '.repeat(line.indent);
+            this.insert(strInsert, pos);
+        }
+    }
+
+    private handleKeyPress(e: KeyboardEvent): void {
+        if (e.key === 'Enter') {
+            this.handleEnterKeyPress(e);
         }
     }
 
