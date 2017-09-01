@@ -8,13 +8,13 @@ import {AppStyles} from './NoteApp';
 import {ContentAdd, ActionToday, NavigationMoreVert} from 'material-ui/svg-icons';
 import TitleInput from './TitleInput';
 import BodyInput from './BodyInput';
-import NoteService from '../domain/model/NoteService';
 
 interface Props {
     id: number | null;
     onDeleteNote: () => void;
     onCreateNewNote: () => void;
     onSaveNote: (title: string, body: string) => void;
+    onChangeNote: (newTitle: string, newBody: string, newSelectionStart: number, newSelectionEnd: number) => void;
     refreshNoteSelectorTitleList: () => void;
 }
 
@@ -28,13 +28,10 @@ interface State {
 
 export default class NoteEditor extends React.PureComponent<Props, State> {
 
-    private noteService: NoteService;
-
     private bodyInput: BodyInput;
 
     constructor() {
         super();
-        this.noteService = NoteService.getInstance();
         this.state = {
             title: '',
             body: '',
@@ -44,26 +41,15 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         };
     }
 
-    loadNote(id: number) {
+    public setTitleAndBody(title: string, body: string) {
         this.setState({
-            title: this.noteService.getTitle(id),
-            body: this.noteService.getBody(id),
+            title: title,
+            body: body
         });
     }
 
-    clear() {
-        this.setState({
-            title: '',
-            body: '',
-        });
-    }
-
-    private deleteNoteCache(): void {
-        if (this.props.id === null) {
-            throw new Error();
-        }
-        this.noteService.remove(this.props.id);
-        this.props.onDeleteNote();
+    public forceBodyInputSelectionStates(selectionStart: number, selectionEnd: number): void {
+        this.bodyInput.forceSelectionStates(selectionStart, selectionEnd);
     }
 
     render() {
@@ -112,12 +98,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                                 this.setState({title: newTitle});
                             }}
                         />
-                        {note.getId() && <DeleteMenu
-                            onClick={() => {
-                                this.deleteNoteCache();
-                            }}
-                        />}
-
+                        {note.getId() && <DeleteMenu onClick={this.props.onDeleteNote} />}
                     </div>
 
                     <Divider/>
@@ -136,18 +117,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         ref={(input: BodyInput) => { this.bodyInput = input; }}
                         value={this.state.body}
                         onChange={(newValue: string, newSelectionStart: number, newSelectionEnd: number) => {
-                            // The cursor position needs to be manually updated,
-                            // because it is automatically changed after settings states.
-                            if (this.props.id !== null) {
-                                this.noteService.update(this.props.id, this.state.title, newValue);
-                            }
-                            this.props.refreshNoteSelectorTitleList();
-                            this.setState({
-                                body: newValue,
-                                selectionStart: newSelectionStart,
-                                selectionEnd: newSelectionEnd,
-                            }, this.bodyInput.forceSelectionStates.bind(this.bodyInput, newSelectionStart, newSelectionEnd));
-                            return;
+                            this.props.onChangeNote(this.state.title, newValue, newSelectionStart, newSelectionEnd);
                         }}
                     />
                 </Paper>

@@ -52,7 +52,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
     private createNewNote(): void {
         this.noteSelector.refreshTitleList();
         this.setState({noteIdInEdit: null});
-        this.noteEditor.clear();
+        this.noteEditor.setTitleAndBody('', '');
     }
 
     private saveNoteToCache(title: string, body: string): void {
@@ -90,17 +90,42 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         onSelectNote={id => {
                             this.saveNoteToCache(this.noteEditor.state.title, this.noteEditor.state.body);
                             this.setState({noteIdInEdit: id});
-                            this.noteEditor.loadNote(id);
+                            this.noteEditor.setTitleAndBody(
+                                this.noteService.getTitle(id),
+                                this.noteService.getBody(id),
+                            );
                         }}
                     />
                     <NoteEditor
                         ref={(node: NoteEditor) => { this.noteEditor = node; }}
                         id={this.state.noteIdInEdit}
+                        onChangeNote={(title: string, body: string, selectionStart: number, selectionEnd: number) => {
+                            if (this.state.noteIdInEdit !== null) {
+                                this.noteService.update(this.state.noteIdInEdit, title, body);
+                                this.noteSelector.refreshTitleList();   // to put a mark on the modified note
+                            }
+
+                            // Cursor position needs to be manually updated,
+                            // because it is automatically changed after setState().
+                            this.noteEditor.setState({
+                                title: title,
+                                body: body,
+                                selectionStart: selectionStart,
+                                selectionEnd: selectionEnd,
+                            }, this.noteEditor.forceBodyInputSelectionStates.bind(this.noteEditor, selectionStart, selectionEnd));
+                            return;
+                        }}
                         onSaveNote={(title: string, body: string) => {
                             this.saveNoteToCache(title, body);
                             this.flushNoteCache();
                         }}
-                        onDeleteNote={this.createNewNote.bind(this)}
+                        onDeleteNote={() => {
+                            if (this.state.noteIdInEdit === null) {
+                                throw new Error();
+                            }
+                            this.noteService.remove(this.state.noteIdInEdit);
+                            this.createNewNote.bind(this)
+                        }}
                         onCreateNewNote={this.createNewNote.bind(this)}
                         refreshNoteSelectorTitleList={() => {
                             this.noteSelector.refreshTitleList();

@@ -12,6 +12,7 @@ export enum SortType {
 
 // TODO: add test
 // TODO: DI
+// TODO: consider using caching library
 export default class NoteService {
 
     private cache: NoteCache;
