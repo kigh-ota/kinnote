@@ -12,10 +12,9 @@ import NoteService from '../domain/model/NoteService';
 
 interface Props {
     id: number | null;
-    onUpdateNote: () => void;
-    onAddNote: (id: number) => void;
     onDeleteNote: () => void;
     onCreateNewNote: () => void;
+    onSaveNote: (title: string, body: string) => void;
     refreshNoteSelectorTitleList: () => void;
 }
 
@@ -59,29 +58,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         });
     }
 
-    public save(flushAll: boolean): void {
-        if (this.props.id !== null) {
-            const anyChangesMade = this.noteService.update(this.props.id, this.state.title, this.state.body);
-            if (anyChangesMade) {
-                this.props.onUpdateNote();
-            }
-        } else {
-            this.noteService.add(this.state.title, this.state.body).then(id => {
-                if (id !== null) {
-                    this.props.onAddNote(id);   // update NoteSelector and reopen note
-                    this.setState({showSaveNotifier: true});
-                }
-            });
-        }
-        if (flushAll) {
-            this.noteService.flush().then(ary => {
-                if (ary.length > 0) {
-                    this.setState({showSaveNotifier: true});
-                }
-            });
-        }
-    }
-
     private deleteNoteCache(): void {
         if (this.props.id === null) {
             throw new Error();
@@ -112,7 +88,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 onKeyDown={(e: any) => {
                     // Ctrl+S
                     if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
-                        this.save(true);
+                        this.props.onSaveNote(this.state.title, this.state.body);
                     }
                     // Ctrl+N
                     if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {

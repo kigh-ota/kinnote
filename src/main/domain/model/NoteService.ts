@@ -64,6 +64,7 @@ export default class NoteService {
             return Promise.resolve(null);
         }
         // flush immediately
+        this.log(`add`);
         return this.repository.add(new Note(null, title, body, false, null, null)).then(noteId => {
             if (noteId === null) {
                 throw new Error();

@@ -55,6 +55,31 @@ export default class NoteApp extends React.PureComponent<Props, State> {
         this.noteEditor.clear();
     }
 
+    private saveNoteToCache(title: string, body: string): void {
+        if (this.state.noteIdInEdit !== null) {
+            const anyChangesMade = this.noteService.update(this.state.noteIdInEdit, title, body);
+            if (anyChangesMade) {
+                this.noteSelector.refreshTitleList();
+            }
+        } else {
+            this.noteService.add(title, body).then(id => {
+                if (id !== null) {
+                    this.noteSelector.refreshTitleList();
+                    this.setState({noteIdInEdit: id});
+                    this.noteEditor.setState({showSaveNotifier: true});
+                }
+            });
+        }
+    }
+
+    private flushNoteCache(): void {
+        this.noteService.flush().then(ary => {
+            if (ary.length > 0) {
+                this.noteEditor.setState({showSaveNotifier: true});
+            }
+        });
+    }
+
     render() {
         return (
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
@@ -63,7 +88,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         ref={(node: NoteSelector) => { this.noteSelector = node; }}
                         selectedId={this.state.noteIdInEdit}
                         onSelectNote={id => {
-                            this.noteEditor.save(false);
+                            this.saveNoteToCache(this.noteEditor.state.title, this.noteEditor.state.body);
                             this.setState({noteIdInEdit: id});
                             this.noteEditor.loadNote(id);
                         }}
@@ -71,12 +96,9 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                     <NoteEditor
                         ref={(node: NoteEditor) => { this.noteEditor = node; }}
                         id={this.state.noteIdInEdit}
-                        onUpdateNote={() => {
-                            this.noteSelector.refreshTitleList();
-                        }}
-                        onAddNote={(id: number) => {
-                            this.noteSelector.refreshTitleList();
-                            this.setState({noteIdInEdit: id});
+                        onSaveNote={(title: string, body: string) => {
+                            this.saveNoteToCache(title, body);
+                            this.flushNoteCache();
                         }}
                         onDeleteNote={this.createNewNote.bind(this)}
                         onCreateNewNote={this.createNewNote.bind(this)}
