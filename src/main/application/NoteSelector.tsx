@@ -96,7 +96,13 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     />
                     <IconButton
                         disabled={this.state.filterInputValue === ''}
-                        onClick={() => {this.setState({filterInputValue: ''});}}
+                        onClick={() => {
+                            const newIdTitleMap = this.noteService.getIdTitleMap(this.state.sortType, '');
+                            this.setState({
+                                filterInputValue: '',
+                                idTitleMap: newIdTitleMap
+                            });
+                        }}
                         iconStyle={{width: buttonIconSize, height: buttonIconSize}}
                         style={{
                             width: buttonSize,
