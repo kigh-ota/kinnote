@@ -12,10 +12,12 @@ interface Props {
 }
 
 interface State {
-    idTitleMap: Map<number, {title: string, modified: boolean, deleted: boolean}>,
+    idTitleMap: Map<number, IdTitleMapValue>,
     filterInputValue: string;
     sortType: SortType;
 }
+
+export type IdTitleMapValue = {title: string, modified: boolean, deleted: boolean};
 
 export default class NoteSelector extends React.PureComponent<Props, State> {
 
@@ -32,9 +34,9 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         };
     }
 
-    updateList() {
+    public refreshTitleList() {
         const newIdTitleMap = this.noteService.getIdTitleMap(this.state.sortType, this.state.filterInputValue);
-        console.log('updateList', newIdTitleMap);
+        // console.log('refreshTitleList', newIdTitleMap);
         this.setState({idTitleMap: newIdTitleMap});
     }
 
@@ -42,6 +44,11 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         const alphaSort: boolean = this.state.sortType === SortType.ALPHABETICAL;
         let listItems: any[] = [];
         this.state.idTitleMap.forEach((title, id) => {
+            let primaryText = title.title;
+            if (title.modified) {
+                // FIXME: asterisk is shown even though after saved
+                primaryText = ' * ' + primaryText;
+            }
             listItems.push(
                 <MenuItem
                     key={id}
@@ -52,7 +59,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                         backgroundColor: id === this.props.selectedId ? colors.blue200 : colors.white,
                     }}
                     innerDivStyle={AppStyles.textBase}
-                    primaryText={title.title}
+                    primaryText={primaryText}
                     onClick={this.props.onSelectNote.bind(this, id)}
                     title={`${id}: ${title.title}`}
                 />

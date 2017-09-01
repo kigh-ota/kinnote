@@ -93,7 +93,6 @@ export default class BodyInput extends React.PureComponent<Props, State> {
         }
         const pos = target.selectionStart;
         const line = StringUtil.getLineInfo(pos, this.props.value);
-        debugger;
         if (line.col === line.str.length) { // if the cursor is at the end of line
             if (line.str.length === line.indent && line.indent > 0) {   // indent only and not empty
                 e.preventDefault();

@@ -15,6 +15,7 @@ interface Props {
     onUpdateNote: () => void;
     onAddNote: (id: number) => void;
     onDeleteNote: () => void;
+    refreshNoteSelectorTitleList: () => void;
 }
 
 interface State {
@@ -154,9 +155,12 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         ref={(input: BodyInput) => { this.bodyInput = input; }}
                         value={this.state.body}
                         onChange={(newValue: string, newSelectionStart: number, newSelectionEnd: number) => {
-                            // The cursor position needs to be updated again,
+                            // The cursor position needs to be manually updated,
                             // because it is automatically changed after settings states.
-                            //
+                            if (this.props.id !== null) {
+                                this.noteService.update(this.props.id, this.state.title, newValue);
+                            }
+                            this.props.refreshNoteSelectorTitleList();
                             this.setState({
                                 body: newValue,
                                 selectionStart: newSelectionStart,

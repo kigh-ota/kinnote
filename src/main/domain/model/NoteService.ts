@@ -3,6 +3,7 @@ import KintoneNoteRepository from '../../infrastructure/KintoneNoteRepository';
 import myConfig from '../../MyConfig';
 import NoteRepository from './NoteRepository';
 import NoteCache from '../../application/NoteCache';
+import {IdTitleMapValue} from '../../application/NoteSelector';
 
 export enum SortType {
     UPDATE_TIME,
@@ -74,9 +75,8 @@ export default class NoteService {
         }); // TODO handle error (e.g., when title is duplicated)
     }
 
-    public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, {title: string, modified: boolean, deleted: boolean}> {
-
-        const map: Map<number, {title: string, modified: boolean, deleted: boolean}> = new Map();
+    public getIdTitleMap(sortType: SortType, filterValue?: string): Map<number, IdTitleMapValue> {
+        const map: Map<number, IdTitleMapValue> = new Map();
         this.cache.getAllNotDeleted()
             .filter(note => note.matchWord(filterValue || ''))
             .sort((a, b) => Note.compare(a, b, sortType))

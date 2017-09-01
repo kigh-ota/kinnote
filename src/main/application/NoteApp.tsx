@@ -75,16 +75,19 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         ref={(node: NoteEditor) => { this.noteEditor = node; }}
                         id={this.state.noteIdInEdit}
                         onUpdateNote={() => {
-                            this.noteSelector.updateList();
+                            this.noteSelector.refreshTitleList();
                         }}
                         onAddNote={(id: number) => {
-                            this.noteSelector.updateList();
+                            this.noteSelector.refreshTitleList();
                             this.setState({noteIdInEdit: id});
                         }}
                         onDeleteNote={() => {
-                            this.noteSelector.updateList();
+                            this.noteSelector.refreshTitleList();
                             this.setState({noteIdInEdit: null});
                             this.noteEditor.openNewNote();
+                        }}
+                        refreshNoteSelectorTitleList={() => {
+                            this.noteSelector.refreshTitleList();
                         }}
                     />
                 </div>
