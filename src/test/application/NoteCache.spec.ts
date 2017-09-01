@@ -1,4 +1,4 @@
-import NoteCache from '../../main/application/NoteCache';
+import NoteCache from '../../main/domain/model/NoteCache';
 import Note from '../../main/domain/model/Note';
 import * as assert from 'assert';
 

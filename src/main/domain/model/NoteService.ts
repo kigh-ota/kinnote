@@ -2,7 +2,7 @@ import Note, {NoteId} from './Note';
 import KintoneNoteRepository from '../../infrastructure/KintoneNoteRepository';
 import myConfig from '../../MyConfig';
 import NoteRepository from './NoteRepository';
-import NoteCache from '../../application/NoteCache';
+import NoteCache from './NoteCache';
 import {IdTitleMapValue} from '../../application/NoteSelector';
 
 export enum SortType {

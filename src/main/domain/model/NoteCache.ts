@@ -1,4 +1,4 @@
-import Note from '../domain/model/Note';
+import Note from './Note';
 
 type NoteCacheItem = {
     note: Note;

@@ -15,6 +15,7 @@ interface Props {
     onUpdateNote: () => void;
     onAddNote: (id: number) => void;
     onDeleteNote: () => void;
+    onCreateNewNote: () => void;
     refreshNoteSelectorTitleList: () => void;
 }
 
@@ -44,14 +45,14 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         };
     }
 
-    open(id: number) {
+    loadNote(id: number) {
         this.setState({
             title: this.noteService.getTitle(id),
             body: this.noteService.getBody(id),
         });
     }
 
-    openNewNote() {
+    clear() {
         this.setState({
             title: '',
             body: '',
@@ -113,6 +114,10 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
                         this.save(true);
                     }
+                    // Ctrl+N
+                    if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
+                        this.props.onCreateNewNote();
+                    }
                 }}
             >
                 <Paper
@@ -169,13 +174,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                             return;
                         }}
                     />
-
-                    <Divider/>
-
-                    <div style={{width: '100%', display: 'flex'}}>
-                        <NewNoteButton/>
-                        <NewNoteTodayButton/>
-                    </div>
                 </Paper>
 
                 <Snackbar
@@ -204,30 +202,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 </div>
             </div>
         );
-
-        function NewNoteButton(props: any) {
-            return (
-                <FloatingActionButton
-                    style={{margin: '8px'}}
-                    onClick={props.onClick}
-                    disabled={false}
-                >
-                    <ContentAdd />
-                </FloatingActionButton>
-            );
-        }
-
-        function NewNoteTodayButton(props: any) {
-            return (
-                <FloatingActionButton
-                    style={{margin: '8px'}}
-                    onClick={props.onClick}
-                    disabled={false}
-                >
-                    <ActionToday />
-                </FloatingActionButton>
-            );
-        }
 
         function DeleteMenu(props: any) {
             return (

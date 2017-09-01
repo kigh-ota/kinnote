@@ -6,6 +6,7 @@ import NoteService from '../domain/model/NoteService';
 import NoteEditor from './NoteEditor';
 import update = require('immutability-helper');
 import Timestamp from '../domain/model/Timestamp';
+import FloatingToolBar from './FloatingToolBar';
 
 export const AppStyles = {
     textBase: {
@@ -32,16 +33,6 @@ export interface NoteState {
     updatedAt: Timestamp,
 }
 
-function toNoteState(note: Note): NoteState {
-    return {
-        id: note.getId(),
-        title: note.getTitle(),
-        body: note.getBody(),
-        createdAt: note.getCreatedAt(),
-        updatedAt: note.getUpdatedAt(),
-    };
-}
-
 export default class NoteApp extends React.PureComponent<Props, State> {
 
     private noteService: NoteService;
@@ -58,6 +49,12 @@ export default class NoteApp extends React.PureComponent<Props, State> {
         };
     }
 
+    private createNewNote(): void {
+        this.noteSelector.refreshTitleList();
+        this.setState({noteIdInEdit: null});
+        this.noteEditor.clear();
+    }
+
     render() {
         return (
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
@@ -68,7 +65,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                         onSelectNote={id => {
                             this.noteEditor.save(false);
                             this.setState({noteIdInEdit: id});
-                            this.noteEditor.open(id);
+                            this.noteEditor.loadNote(id);
                         }}
                     />
                     <NoteEditor
@@ -81,14 +78,14 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                             this.noteSelector.refreshTitleList();
                             this.setState({noteIdInEdit: id});
                         }}
-                        onDeleteNote={() => {
-                            this.noteSelector.refreshTitleList();
-                            this.setState({noteIdInEdit: null});
-                            this.noteEditor.openNewNote();
-                        }}
+                        onDeleteNote={this.createNewNote.bind(this)}
+                        onCreateNewNote={this.createNewNote.bind(this)}
                         refreshNoteSelectorTitleList={() => {
                             this.noteSelector.refreshTitleList();
                         }}
+                    />
+                    <FloatingToolBar
+                        onClickNewNoteButton={this.createNewNote.bind(this)}
                     />
                 </div>
             </MuiThemeProvider>
