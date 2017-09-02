@@ -8,10 +8,10 @@ import {AppStyles} from './NoteApp';
 import {ContentAdd, ActionToday, NavigationMoreVert} from 'material-ui/svg-icons';
 import TitleInput from './TitleInput';
 import BodyInput from './BodyInput';
-import {NOTE_SELECTOR_WIDTH} from './NoteSelector';
 
 interface Props {
     id: number | null;
+    marginLeft: number;
     onDeleteNote: () => void;
     onCreateNewNote: () => void;
     onSaveNote: (title: string, body: string) => void;
@@ -71,7 +71,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         return (
             <div
                 className="note-editor"
-                style={{ marginLeft: NOTE_SELECTOR_WIDTH }}
+                style={{ marginLeft: this.props.marginLeft }}
                 onKeyDown={(e: any) => {
                     // Ctrl+S
                     if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {

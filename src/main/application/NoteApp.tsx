@@ -81,12 +81,15 @@ export default class NoteApp extends React.PureComponent<Props, State> {
     }
 
     render() {
+        const noteSelectWidth = 300;
+
         return (
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
                 <div>
                     <NoteSelector
                         ref={(node: NoteSelector) => { this.noteSelector = node; }}
                         selectedId={this.state.noteIdInEdit}
+                        width={noteSelectWidth}
                         onSelectNote={id => {
                             this.saveNoteToCache(this.noteEditor.state.title, this.noteEditor.state.body);
                             this.setState({noteIdInEdit: id});
@@ -99,6 +102,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                     <NoteEditor
                         ref={(node: NoteEditor) => { this.noteEditor = node; }}
                         id={this.state.noteIdInEdit}
+                        marginLeft={noteSelectWidth}
                         onChangeNote={(title: string, body: string, selectionStart: number, selectionEnd: number) => {
                             if (this.state.noteIdInEdit !== null) {
                                 this.noteService.update(this.state.noteIdInEdit, title, body);

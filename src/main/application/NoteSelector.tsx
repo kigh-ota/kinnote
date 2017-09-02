@@ -8,6 +8,7 @@ import {default as NoteService, SortType} from '../domain/model/NoteService';
 
 interface Props {
     selectedId: NoteStateId,
+    width: number,
     onSelectNote: (id: number) => void;
 }
 
@@ -17,8 +18,6 @@ interface State {
     filterInputValue: string;
     sortType: SortType;
 }
-
-export const NOTE_SELECTOR_WIDTH: number = 300;
 
 export type IdTitleMapValue = {title: string, modified: boolean, deleted: boolean};
 
@@ -50,7 +49,6 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         this.state.idTitleMap.forEach((title, id) => {
             let primaryText = title.title;
             if (title.modified) {
-                // FIXME: asterisk is shown even though after saved
                 primaryText = ' * ' + primaryText;
             }
             listItems.push(
@@ -99,7 +97,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
 
         return (
             <Drawer
-                width={NOTE_SELECTOR_WIDTH}
+                width={this.props.width}
                 open={true}
                 docked={true}
             >
@@ -108,7 +106,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                         name="noteFilterInput"
                         style={Object.assign({}, {
                             margin: '0 8px',
-                            width: NOTE_SELECTOR_WIDTH - 16 - buttonSize*3 - buttonMarginRight,
+                            width: this.props.width - 16 - buttonSize*3 - buttonMarginRight,
                         }, AppStyles.textBase)}
                         hintText="Filter"
                         value={this.state.filterInputValue}
