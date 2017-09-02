@@ -1,4 +1,4 @@
-import Note, {NoteId} from './Note';
+import Note, {NoteId, Tag} from './Note';
 import KintoneNoteRepository from '../../infrastructure/KintoneNoteRepository';
 import myConfig from '../../MyConfig';
 import NoteRepository from './NoteRepository';
@@ -91,6 +91,16 @@ export default class NoteService {
                 });
             });
         return map;
+    }
+
+    public getAllTags(): Set<Tag> {
+        const tags: Set<Tag> = new Set();
+        this.cache.getAllNotDeleted().forEach(note => {
+            note.getTags().forEach(tag => {
+                tags.add(tag);
+            });
+        });
+        return tags;
     }
 
     public getTitle(id: number): string {

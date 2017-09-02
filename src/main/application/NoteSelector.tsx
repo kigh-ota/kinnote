@@ -1,8 +1,8 @@
 import {Tag} from '../domain/model/Note';
 import * as React from 'react';
-import {Drawer, IconButton, MenuItem, TextField} from 'material-ui';
+import {Drawer, IconButton, MenuItem, TextField, IconMenu} from 'material-ui';
 import {AppStyles, NoteState, NoteStateId} from './NoteApp';
-import {AvSortByAlpha, ContentClear} from 'material-ui/svg-icons';
+import {ActionToc, AvSortByAlpha, ContentClear} from 'material-ui/svg-icons';
 import {colors} from 'material-ui/styles';
 import {default as NoteService, SortType} from '../domain/model/NoteService';
 
@@ -13,9 +13,12 @@ interface Props {
 
 interface State {
     idTitleMap: Map<number, IdTitleMapValue>,
+    tags: Tag[],
     filterInputValue: string;
     sortType: SortType;
 }
+
+export const NOTE_SELECTOR_WIDTH: number = 300;
 
 export type IdTitleMapValue = {title: string, modified: boolean, deleted: boolean};
 
@@ -27,8 +30,14 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         super();
         this.noteService = NoteService.getInstance();
         const INITIAL_SORT_TYPE: SortType = SortType.UPDATE_TIME;
+        let tags: Tag[] = [];
+        this.noteService.getAllTags().forEach(tag => {
+            tags.push(tag);
+        });
+        tags.sort((a, b) => a.localeCompare(b));
         this.state = {
             idTitleMap: this.noteService.getIdTitleMap(INITIAL_SORT_TYPE),
+            tags: tags,
             filterInputValue: '',
             sortType: INITIAL_SORT_TYPE,
         };
@@ -66,14 +75,32 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
             );
         });
 
-        const drawerWidth: number = 250;
+        let tagMenuItems: any[] = this.state.tags.map(tag => {
+            return <MenuItem
+                key={tag}
+                primaryText={`#${tag}`}
+                onClick={() => {
+                    this.setState({
+                        filterInputValue: tag,
+                        idTitleMap: this.noteService.getIdTitleMap(this.state.sortType, tag),
+                    });
+                }}
+                className="tag-menu-item"
+                style={{
+                    minHeight: (AppStyles.textBase.fontSize + 8) + 'px',
+                    lineHeight: (AppStyles.textBase.fontSize + 8) + 'px',
+                }}
+                innerDivStyle={AppStyles.textBase}
+            />
+        });
+
         const buttonSize: number = 24;
         const buttonIconSize: number = 18;
         const buttonMarginRight: number = 6;
 
         return (
             <Drawer
-                width={drawerWidth}
+                width={NOTE_SELECTOR_WIDTH}
                 open={true}
                 docked={true}
             >
@@ -82,7 +109,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                         name="noteFilterInput"
                         style={Object.assign({}, {
                             margin: '0 8px',
-                            width: drawerWidth - 16 - buttonSize*2 - buttonMarginRight,
+                            width: NOTE_SELECTOR_WIDTH - 16 - buttonSize*3 - buttonMarginRight,
                         }, AppStyles.textBase)}
                         hintText="Filter"
                         value={this.state.filterInputValue}
@@ -94,6 +121,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                             });
                         }}
                     />
+
                     <IconButton
                         disabled={this.state.filterInputValue === ''}
                         onClick={() => {
@@ -114,6 +142,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     >
                         <ContentClear />
                     </IconButton>
+
                     <IconButton
                         onClick={() => {
                             const newSortType: SortType = alphaSort ? SortType.UPDATE_TIME : SortType.ALPHABETICAL;
@@ -132,13 +161,13 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                             width: buttonSize,
                             height: buttonSize,
                             padding: (buttonSize - buttonIconSize) / 2,
-                            marginRight: buttonMarginRight,
+                            marginRight: 0,
                             verticalAlign: 'middle',
                         }}
                     >
                         <AvSortByAlpha />
                     </IconButton>
-
+                    <TagMenu/>
                 </div>
 
                 <div className="note-list">
@@ -146,5 +175,30 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                 </div>
             </Drawer>
         );
+
+        function TagMenu() {
+            return <IconMenu
+                iconButtonElement={
+                    <IconButton
+                        iconStyle={{
+                            width: buttonIconSize,
+                            height: buttonIconSize,
+                            // color: alphaSort ? colors.blue900 : colors.grey500,
+                        }}
+                        style={{
+                            width: buttonSize,
+                            height: buttonSize,
+                            padding: (buttonSize - buttonIconSize) / 2,
+                            marginRight: buttonMarginRight,
+                            verticalAlign: 'middle',
+                        }}
+                    >
+                        <ActionToc/>
+                    </IconButton>
+                }
+            >
+                {tagMenuItems}
+            </IconMenu>
+        }
     }
 }
