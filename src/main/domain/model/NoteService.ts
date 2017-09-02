@@ -93,14 +93,17 @@ export default class NoteService {
         return map;
     }
 
-    public getAllTags(): Set<Tag> {
-        const tags: Set<Tag> = new Set();
+    public getAllTagCounts(): Map<Tag, number> {
+        const tagCounts: Map<Tag, number> = new Map();
         this.cache.getAllNotDeleted().forEach(note => {
             note.getTags().forEach(tag => {
-                tags.add(tag);
+                if (!tagCounts.has(tag)) {
+                    tagCounts.set(tag, 0);
+                }
+                tagCounts.set(tag, (tagCounts.get(tag) as number) + 1);
             });
         });
-        return tags;
+        return tagCounts;
     }
 
     public getTitle(id: number): string {

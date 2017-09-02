@@ -13,7 +13,7 @@ interface Props {
 
 interface State {
     idTitleMap: Map<number, IdTitleMapValue>,
-    tags: Tag[],
+    tagCounts: Map<Tag, number>,
     filterInputValue: string;
     sortType: SortType;
 }
@@ -30,14 +30,9 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         super();
         this.noteService = NoteService.getInstance();
         const INITIAL_SORT_TYPE: SortType = SortType.UPDATE_TIME;
-        let tags: Tag[] = [];
-        this.noteService.getAllTags().forEach(tag => {
-            tags.push(tag);
-        });
-        tags.sort((a, b) => a.localeCompare(b));
         this.state = {
             idTitleMap: this.noteService.getIdTitleMap(INITIAL_SORT_TYPE),
-            tags: tags,
+            tagCounts: this.noteService.getAllTagCounts(),
             filterInputValue: '',
             sortType: INITIAL_SORT_TYPE,
         };
@@ -75,10 +70,13 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
             );
         });
 
-        let tagMenuItems: any[] = this.state.tags.map(tag => {
-            return <MenuItem
+
+        let tagMenuItems: any[] = [];
+        this.state.tagCounts.forEach((count, tag) => {
+            tagMenuItems.push(<MenuItem
                 key={tag}
                 primaryText={`#${tag}`}
+                secondaryText={count}
                 onClick={() => {
                     this.setState({
                         filterInputValue: tag,
@@ -91,8 +89,9 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     lineHeight: (AppStyles.textBase.fontSize + 8) + 'px',
                 }}
                 innerDivStyle={AppStyles.textBase}
-            />
+            />);
         });
+        tagMenuItems.sort((a, b) => a.key.localeCompare(b.key));
 
         const buttonSize: number = 24;
         const buttonIconSize: number = 18;
