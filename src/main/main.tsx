@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom';
 import NoteApp from './application/NoteApp';
 import NoteService from './domain/model/NoteService';
 
-// TODO: list tags
+// TODO: full text search
 // TODO: resize NoteSelector
 // TODO: measure code coverage
 // TODO: save sort type

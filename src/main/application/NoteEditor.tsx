@@ -13,7 +13,7 @@ interface Props {
     id: number | null;
     marginLeft: number;
     onDeleteNote: () => void;
-    onCreateNewNote: () => void;
+    onCreateNewNote: (title: string, body: string) => void;
     onSaveNote: (title: string, body: string) => void;
     onChangeNote: (newTitle: string, newBody: string, newSelectionStart: number, newSelectionEnd: number) => void;
     refreshNoteSelectorTitleList: () => void;
@@ -79,7 +79,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                     }
                     // Ctrl+N
                     if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
-                        this.props.onCreateNewNote();
+                        this.props.onCreateNewNote(this.state.title, this.state.body);
                     }
                 }}
             >

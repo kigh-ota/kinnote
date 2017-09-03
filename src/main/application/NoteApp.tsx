@@ -130,7 +130,10 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                             this.noteService.remove(this.state.noteIdInEdit);
                             this.createNewNote();
                         }}
-                        onCreateNewNote={this.createNewNote.bind(this)}
+                        onCreateNewNote={(title, body) => {
+                            this.saveNoteToCache(title, body);
+                            this.createNewNote();
+                        }}
                         refreshNoteSelectorTitleList={() => {
                             this.noteSelector.refreshTitleList();
                         }}
