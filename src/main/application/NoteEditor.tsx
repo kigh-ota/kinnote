@@ -29,6 +29,8 @@ interface State {
 
 export default class NoteEditor extends React.PureComponent<Props, State> {
 
+    private titleInput: TitleInput;
+
     private bodyInput: BodyInput;
 
     constructor() {
@@ -53,6 +55,15 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         this.bodyInput.forceSelectionStates(selectionStart, selectionEnd);
     }
 
+    public saveNote(): void {
+        this.props.onSaveNote(this.state.title, this.state.body);
+    }
+
+    public createNewNote(): void {
+        this.props.onCreateNewNote(this.state.title, this.state.body);
+        this.titleInput.focus();
+    }
+
     render() {
         const note = new Note(this.props.id, this.state.title, this.state.body, false, null, null);
 
@@ -72,16 +83,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
             <div
                 className="note-editor"
                 style={{ marginLeft: this.props.marginLeft }}
-                onKeyDown={(e: any) => {
-                    // Ctrl+S
-                    if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
-                        this.props.onSaveNote(this.state.title, this.state.body);
-                    }
-                    // Ctrl+N
-                    if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
-                        this.props.onCreateNewNote(this.state.title, this.state.body);
-                    }
-                }}
             >
                 <Paper
                     zDepth={1}
@@ -94,6 +95,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         backgroundColor: note.getId() ? white : yellow100,
                     }}>
                         <TitleInput
+                            ref={(input: TitleInput) => { this.titleInput = input; }}
                             value={this.state.title}
                             onChange={newTitle => {
                                 this.setState({title: newTitle});

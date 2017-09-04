@@ -85,7 +85,18 @@ export default class NoteApp extends React.PureComponent<Props, State> {
 
         return (
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-                <div>
+                <div
+                    onKeyDown={(e: any) => {
+                        // Ctrl+S
+                        if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
+                            this.noteEditor.saveNote();
+                        }
+                        // Ctrl+N
+                        if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
+                            this.noteEditor.createNewNote();
+                        }
+                    }}
+                >
                     <NoteSelector
                         ref={(node: NoteSelector) => { this.noteSelector = node; }}
                         selectedId={this.state.noteIdInEdit}

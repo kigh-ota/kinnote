@@ -11,9 +11,17 @@ interface State {
 }
 
 export default class TitleInput extends React.PureComponent<Props, State> {
+
+    private input: TextField;
+
+    public focus(): void {
+        this.input.focus();
+    }
+
     render() {
         return (
             <TextField
+                ref={(input: TextField) => { this.input = input; }}
                 name="titleInput"
                 className="note-title-input"
                 style={Object.assign(
