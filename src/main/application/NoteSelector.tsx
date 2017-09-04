@@ -70,6 +70,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     primaryText={primaryText}
                     onClick={this.props.onSelectNote.bind(this, id)}
                     title={`${id}: ${title.title}`}
+                    tabIndex={-1}
                 />
             );
         });
@@ -174,7 +175,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     <TagMenu/>
                 </div>
 
-                <div className="note-list">
+                <div className="note-list" tabIndex={0}>
                     {listItems}
                 </div>
             </Drawer>
