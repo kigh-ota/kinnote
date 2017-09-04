@@ -62,5 +62,4 @@ export default class FloatingToolBar extends React.PureComponent<Props, State> {
         }
     }
 
-
 }

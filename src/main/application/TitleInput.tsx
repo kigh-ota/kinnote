@@ -1,6 +1,6 @@
 import {TextField} from 'material-ui';
-import {AppStyles} from './NoteApp';
 import * as React from 'react';
+import {AppStyles} from './NoteApp';
 
 interface Props {
     value: string;
@@ -18,7 +18,7 @@ export default class TitleInput extends React.PureComponent<Props, State> {
         this.input.focus();
     }
 
-    render() {
+    public render() {
         return (
             <TextField
                 ref={(input: TextField) => { this.input = input; }}
@@ -27,14 +27,14 @@ export default class TitleInput extends React.PureComponent<Props, State> {
                 style={Object.assign(
                     {},
                     {margin: '8px'},
-                    AppStyles.textBase
+                    AppStyles.textBase,
                 )}
                 hintText="Title"
                 underlineShow={false}
                 fullWidth={true}
                 value={this.props.value}
-                onChange={(e: Object, newValue: string) => {
-                    this.props.onChange(newValue)
+                onChange={(e: any, newValue: string) => {
+                    this.props.onChange(newValue);
                 }}
             />
         );

@@ -75,10 +75,9 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                     onClick={this.props.onSelectNote.bind(this, id)}
                     title={`${id}: ${title.title}`}
                     tabIndex={-1}
-                />
+                />,
             );
         });
-
 
         const tagMenuItems: any[] = [];
         this.state.tagCounts.forEach((count, tag) => {
@@ -124,7 +123,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                         }, AppStyles.textBase)}
                         hintText="Filter"
                         value={this.state.filterInputValue}
-                        onChange={(e: Object, newValue: string) => {
+                        onChange={(e: any, newValue: string) => {
                             const newIdTitleMap = this.noteService.getIdTitleMap(this.state.sortType, newValue);
                             this.setState({
                                 filterInputValue: newValue,

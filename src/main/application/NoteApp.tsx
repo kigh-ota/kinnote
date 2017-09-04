@@ -48,37 +48,6 @@ export default class NoteApp extends React.PureComponent<Props, State> {
         };
     }
 
-    private createNewNote(): void {
-        this.noteSelector.refreshTitleList();
-        this.setState({noteIdInEdit: null});
-        this.noteEditor.setTitleAndBody('', '');
-    }
-
-    private saveNoteToCache(title: string, body: string): void {
-        if (this.state.noteIdInEdit !== null) {
-            const anyChangesMade = this.noteService.update(this.state.noteIdInEdit, title, body);
-            if (anyChangesMade) {
-                this.noteSelector.refreshTitleList();
-            }
-        } else {
-            this.noteService.add(title, body).then(id => {
-                if (id !== null) {
-                    this.noteSelector.refreshTitleList();
-                    this.setState({noteIdInEdit: id});
-                    this.noteEditor.setState({showSaveNotifier: true});
-                }
-            });
-        }
-    }
-
-    private flushNoteCache(): void {
-        this.noteService.flush().then(ary => {
-            if (ary.length > 0) {
-                this.noteEditor.setState({showSaveNotifier: true});
-            }
-        });
-    }
-
     public render() {
         const noteSelectWidth = 300;
 
@@ -125,7 +94,7 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                             // because it is automatically changed after setState().
                             this.noteEditor.setState(
                                 {title, body, selectionStart, selectionEnd},
-                                this.noteEditor.forceBodyInputSelectionStates.bind(this.noteEditor, selectionStart, selectionEnd)
+                                this.noteEditor.forceBodyInputSelectionStates.bind(this.noteEditor, selectionStart, selectionEnd),
                             );
                             return;
                         }}
@@ -155,4 +124,36 @@ export default class NoteApp extends React.PureComponent<Props, State> {
             </MuiThemeProvider>
         );
     }
+
+    private createNewNote(): void {
+        this.noteSelector.refreshTitleList();
+        this.setState({noteIdInEdit: null});
+        this.noteEditor.setTitleAndBody('', '');
+    }
+
+    private saveNoteToCache(title: string, body: string): void {
+        if (this.state.noteIdInEdit !== null) {
+            const anyChangesMade = this.noteService.update(this.state.noteIdInEdit, title, body);
+            if (anyChangesMade) {
+                this.noteSelector.refreshTitleList();
+            }
+        } else {
+            this.noteService.add(title, body).then(id => {
+                if (id !== null) {
+                    this.noteSelector.refreshTitleList();
+                    this.setState({noteIdInEdit: id});
+                    this.noteEditor.setState({showSaveNotifier: true});
+                }
+            });
+        }
+    }
+
+    private flushNoteCache(): void {
+        this.noteService.flush().then(ary => {
+            if (ary.length > 0) {
+                this.noteEditor.setState({showSaveNotifier: true});
+            }
+        });
+    }
+
 }

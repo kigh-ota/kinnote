@@ -8,6 +8,7 @@ import NoteService from './domain/model/NoteService';
 // TODO: resize NoteSelector
 // TODO: measure code coverage
 // TODO: save sort type
+// TODO: fix tslint jsx-no-lambda, jsx-no-bind
 
 (() => {
     if (location.hash === '#note') {

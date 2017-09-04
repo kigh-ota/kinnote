@@ -169,7 +169,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                         color: grey500,
                     })}
                 >
-                    {`${this.state.selectionStart}:${this.state.selectionEnd}` /* `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`// + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`// + `(${bodyLines} lines)` */}
+                    {`${this.state.selectionStart}:${this.state.selectionEnd}`/* `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`// + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`// + `(${bodyLines} lines)` */}
                 </div>
             </div>
         );
