@@ -23,6 +23,8 @@ export type IdTitleMapValue = {title: string, modified: boolean, deleted: boolea
 
 export default class NoteSelector extends React.PureComponent<Props, State> {
 
+    private filterInput: TextField;
+
     private noteService: NoteService;
 
     constructor() {
@@ -41,6 +43,10 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
         const newIdTitleMap = this.noteService.getIdTitleMap(this.state.sortType, this.state.filterInputValue);
         // console.log('refreshTitleList', newIdTitleMap);
         this.setState({idTitleMap: newIdTitleMap});
+    }
+
+    public focusFilterInput(): void {
+        this.filterInput.focus();
     }
 
     render() {
@@ -104,6 +110,7 @@ export default class NoteSelector extends React.PureComponent<Props, State> {
                 <div>
                     <TextField
                         name="noteFilterInput"
+                        ref={(input: TextField) => { this.filterInput = input; }}
                         style={Object.assign({}, {
                             margin: '0 8px',
                             width: this.props.width - 16 - buttonSize*3 - buttonMarginRight,

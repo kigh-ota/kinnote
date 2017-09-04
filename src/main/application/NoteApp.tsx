@@ -92,8 +92,12 @@ export default class NoteApp extends React.PureComponent<Props, State> {
                             this.noteEditor.saveNote();
                         }
                         // Ctrl+N
-                        if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
+                        else if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
                             this.noteEditor.createNewNote();
+                        }
+                        // Ctrl+/
+                        else if (e.key === '/' && e.ctrlKey) {
+                            this.noteSelector.focusFilterInput();
                         }
                     }}
                 >
