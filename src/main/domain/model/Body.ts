@@ -7,15 +7,15 @@ export default class Body {
         this.value = body;
     }
 
-    getValue(): string {
+    public getValue(): string {
         return this.value;
     }
 
-    getNumberOfLines(): number {
+    public getNumberOfLines(): number {
         return (this.value.match(/\n/g) || []).length + 1;
     }
 
-    getTags(): Set<Tag> {
+    public getTags(): Set<Tag> {
         return new Set(
             this.value
                 .split('\n')

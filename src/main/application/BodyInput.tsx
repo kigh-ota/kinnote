@@ -1,8 +1,8 @@
-import * as React from 'react';
 import {TextField} from 'material-ui';
-import {AppStyles} from './NoteApp';
-import Body from '../domain/model/Body';
+import * as React from 'react';
 import {FormEvent} from 'react';
+import Body from '../domain/model/Body';
+import {AppStyles} from './NoteApp';
 
 interface Props {
     value: string;
@@ -15,6 +15,53 @@ interface State {
 export default class BodyInput extends React.PureComponent<Props, State> {
 
     private input: TextField;
+
+    public forceSelectionStates(start: number, end: number): void {
+        const input = this.input as any;
+        input.input.refs.input.selectionStart = start;
+        input.input.refs.input.selectionEnd = end;
+    }
+
+    public render() {
+        const bodyLines: number = new Body(this.props.value).getNumberOfLines();
+        const bodyRows: number = Math.max(6, bodyLines);
+
+        return (
+            <TextField
+                ref={(input: TextField) => { this.input = input; }}
+                name="bodyInput"
+                className="note-body-input"
+                style={Object.assign({}, {
+                    margin: '8px',
+                    lineHeight: '1.4em',
+                }, AppStyles.textBase)}
+                hintText="Body"
+                underlineShow={false}
+                multiLine={true}
+                rows={bodyRows}
+                rowsMax={bodyRows}
+                fullWidth={true}
+                value={this.props.value}
+                onChange={(e: FormEvent<HTMLTextAreaElement>, newValue: string) => {
+                    const newValueRep = newValue.replace('　', '  ');
+                    const diffChar = newValueRep.length - newValue.length;
+                    const target = e.target as HTMLTextAreaElement;
+                    const newSelectionStart = target.selectionStart + diffChar;
+                    const newSelectionEnd = target.selectionEnd + diffChar;
+                    this.props.onChange(newValueRep, newSelectionStart, newSelectionEnd);
+                }}
+                onKeyDown={this.handleKeyDown.bind(this)}
+                onKeyPress={this.handleKeyPress.bind(this)}
+                onKeyUp={(e: any) => {
+                    this.props.onChange(this.props.value, e.target.selectionStart, e.target.selectionEnd);
+                }}
+                onMouseUp={(e: any) => {
+                    // @types/material-ui needs to be modified to use this handler!
+                    this.props.onChange(this.props.value, e.target.selectionStart, e.target.selectionEnd);
+                }}
+            />
+        );
+    }
 
     private unindent(pos: number): void {
         const ret = StringUtil.decreaseIndent(this.props.value, pos);
@@ -60,7 +107,7 @@ export default class BodyInput extends React.PureComponent<Props, State> {
         } else {
             // no text selected
             const pos = target.selectionStart;
-            this.unindent(pos)
+            this.unindent(pos);
         }
     }
 
@@ -121,64 +168,17 @@ export default class BodyInput extends React.PureComponent<Props, State> {
             this.handleEnterKeyPress(e);
         }
     }
-
-    public forceSelectionStates(start: number, end: number): void {
-        const input = this.input as any;
-        input.input.refs.input.selectionStart = start;
-        input.input.refs.input.selectionEnd = end;
-    }
-
-    render() {
-        const bodyLines: number = new Body(this.props.value).getNumberOfLines();
-        const bodyRows: number = Math.max(6, bodyLines);
-
-        return (
-            <TextField
-                ref={(input: TextField) => { this.input = input; }}
-                name="bodyInput"
-                className="note-body-input"
-                style={Object.assign({}, {
-                    margin: '8px',
-                    lineHeight: '1.4em',
-                }, AppStyles.textBase)}
-                hintText="Body"
-                underlineShow={false}
-                multiLine={true}
-                rows={bodyRows}
-                rowsMax={bodyRows}
-                fullWidth={true}
-                value={this.props.value}
-                onChange={(e: FormEvent<HTMLTextAreaElement>, newValue: string) => {
-                    const newValueRep = newValue.replace('　', '  ');
-                    const diffChar = newValueRep.length - newValue.length;
-                    const target = e.target as HTMLTextAreaElement;
-                    const newSelectionStart = target.selectionStart + diffChar;
-                    const newSelectionEnd = target.selectionEnd + diffChar;
-                    this.props.onChange(newValueRep, newSelectionStart, newSelectionEnd);
-                }}
-                onKeyDown={this.handleKeyDown.bind(this)}
-                onKeyPress={this.handleKeyPress.bind(this)}
-                onKeyUp={(e: any) => {
-                    this.props.onChange(this.props.value, e.target.selectionStart, e.target.selectionEnd);
-                }}
-                onMouseUp={(e: any) => {
-                    // @types/material-ui needs to be modified to use this handler!
-                    this.props.onChange(this.props.value, e.target.selectionStart, e.target.selectionEnd);
-                }}
-            />
-        );
-    }
 }
 
-type LineInfo = {
-    str: string,
-    posBegin: number,
-    posEnd: number, // (index of the last character of str) + 1
-    col: number,
-    num: number,    // 行番号(1-)
-    indent: number,
-    bullet: Bullet,
-};
+interface LineInfo {
+    str: string;
+    posBegin: number;
+    posEnd: number; // (index of the last character of str) + 1
+    col: number;
+    num: number;    // 行番号(1-)
+    indent: number;
+    bullet: Bullet;
+}
 
 type Bullet = '' | '* ' | '- ' | '・';
 
@@ -190,7 +190,9 @@ function getLineInfo_(pos: number, str: string): LineInfo {
     }
     let posBegin: number = pos;
     while (posBegin > 0) {
-        if (str.charAt(posBegin - 1) === '\n') break;
+        if (str.charAt(posBegin - 1) === '\n') {
+            break;
+        }
         posBegin--;
     }
     let posEnd: number = str.indexOf('\n', pos);
@@ -200,20 +202,24 @@ function getLineInfo_(pos: number, str: string): LineInfo {
     const line: string = str.slice(posBegin, posEnd);
     let indent: number = 0;
     for (; indent < line.length; indent++) {
-        if (line.charAt(indent) !== ' ') break;
+        if (line.charAt(indent) !== ' ') {
+            break;
+        }
     }
     // seek bullet
     let bulletFound = '';
     ['* ', '- ', '・'].forEach(bullet => {
-        if (line.length >= indent + bullet.length && line.substr(indent, bullet.length) === bullet) bulletFound = bullet;
+        if (line.length >= indent + bullet.length && line.substr(indent, bullet.length) === bullet) {
+            bulletFound = bullet;
+        }
     });
     return {
         str: line,  // should not include \n
-        posBegin: posBegin,
-        posEnd: posEnd,
+        posBegin,
+        posEnd,
         col: pos - posBegin,
         num: str.substring(0, pos).split('\n').length,
-        indent: indent,
+        indent,
         bullet: bulletFound as Bullet,
     };
 }
@@ -235,7 +241,9 @@ function changeIndentRangeInner_(str: string, posStart: number, posEnd: number, 
             str = ret.updated;
             diff = ret.numRemove;
         }
-        if (line.num === lineStart.num) diffStart += diff;
+        if (line.num === lineStart.num) {
+            diffStart += diff;
+        }
         diffEnd += diff;
         if (line.num === lineEnd.num) {
             break;
@@ -246,17 +254,17 @@ function changeIndentRangeInner_(str: string, posStart: number, posEnd: number, 
     }
     return {
         updated: str,
-        diffStart: diffStart,
-        diffEnd: diffEnd,
+        diffStart,
+        diffEnd,
     };
 }
 
 class StringUtil {
-    static getLineInfo(pos: number, str: string): LineInfo {
+    public static getLineInfo(pos: number, str: string): LineInfo {
         return getLineInfo_(pos, str);
     }
 
-    static changeIndent(n: number, content: string, line: LineInfo): string {
+    public static changeIndent(n: number, content: string, line: LineInfo): string {
         if (n > 0) {
             return content.substring(0, line.posBegin) + ' '.repeat(n) + content.substring(line.posBegin);
         } else if (n < 0) {
@@ -270,17 +278,17 @@ class StringUtil {
     }
 
     // インデントを一段上げた文字列を返す
-    static increaseIndent(content: string, pos: number): {updated: string, numAdd: number} {
+    public static increaseIndent(content: string, pos: number): {updated: string, numAdd: number} {
         const line = getLineInfo_(pos, content);
         const numAdd: number = TAB_SPACES - (line.indent % TAB_SPACES);
         return {
             updated: StringUtil.changeIndent(numAdd, content, line),
-            numAdd: numAdd
+            numAdd,
         };
     }
 
     // インデントを一段下げた文字列を返す
-    static decreaseIndent(content: string, pos: number): {updated: string, numRemove: number} {
+    public static decreaseIndent(content: string, pos: number): {updated: string, numRemove: number} {
         const line = getLineInfo_(pos, content);
         if (line.indent === 0) {
             return {
@@ -292,11 +300,11 @@ class StringUtil {
         const numRemove = (r === 0) ? TAB_SPACES : r;
         return {
             updated: StringUtil.changeIndent(-numRemove, content, line),
-            numRemove: numRemove
+            numRemove,
         };
     }
 
-    static increaseIndentRange(str: string, posStart: number, posEnd: number): {updated: string, numAddStart: number, numAddEnd: number} {
+    public static increaseIndentRange(str: string, posStart: number, posEnd: number): {updated: string, numAddStart: number, numAddEnd: number} {
         const ret = changeIndentRangeInner_(str, posStart, posEnd, true);
         return {
             updated: ret.updated,
@@ -305,7 +313,7 @@ class StringUtil {
         };
     }
 
-    static decreaseIndentRange(str: string, posStart: number, posEnd: number): {updated: string, numRemoveStart: number, numRemoveEnd: number} {
+    public static decreaseIndentRange(str: string, posStart: number, posEnd: number): {updated: string, numRemoveStart: number, numRemoveEnd: number} {
         const ret = changeIndentRangeInner_(str, posStart, posEnd, false);
         return {
             updated: ret.updated,

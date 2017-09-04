@@ -1,13 +1,13 @@
-import * as React from 'react';
-import Note from '../domain/model/Note';
 import {
-    Chip, Divider, FloatingActionButton, IconButton, IconMenu, MenuItem, Paper, Snackbar
+    Chip, Divider, FloatingActionButton, IconButton, IconMenu, MenuItem, Paper, Snackbar,
 } from 'material-ui';
 import {grey500, white, yellow100} from 'material-ui/styles/colors';
-import {AppStyles} from './NoteApp';
-import {ContentAdd, ActionToday, NavigationMoreVert} from 'material-ui/svg-icons';
-import TitleInput from './TitleInput';
+import {ActionToday, ContentAdd, NavigationMoreVert} from 'material-ui/svg-icons';
+import * as React from 'react';
+import Note from '../domain/model/Note';
 import BodyInput from './BodyInput';
+import {AppStyles} from './NoteApp';
+import TitleInput from './TitleInput';
 
 interface Props {
     id: number | null;
@@ -22,9 +22,9 @@ interface Props {
 interface State {
     title: string;
     body: string;
-    selectionStart: number,
-    selectionEnd: number,
-    showSaveNotifier: boolean,
+    selectionStart: number;
+    selectionEnd: number;
+    showSaveNotifier: boolean;
 }
 
 export default class NoteEditor extends React.PureComponent<Props, State> {
@@ -46,8 +46,8 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
 
     public setTitleAndBody(title: string, body: string) {
         this.setState({
-            title: title,
-            body: body
+            title,
+            body,
         });
     }
 
@@ -64,7 +64,7 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
         this.titleInput.focus();
     }
 
-    render() {
+    public render() {
         const note = new Note(this.props.id, this.state.title, this.state.body, false, null, null);
 
         const tagChips = Array.from(note.getTags()).map(tag => {
@@ -78,79 +78,6 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 </Chip>
             );
         });
-
-        return (
-            <div
-                className="note-editor"
-                style={{ marginLeft: this.props.marginLeft }}
-            >
-                <Paper
-                    zDepth={1}
-                    rounded={false}
-                    style={{margin: '8px'}}
-                >
-                    <div style={{
-                        width: '100%',
-                        display: 'flex',
-                        backgroundColor: note.getId() ? white : yellow100,
-                    }}>
-                        <TitleInput
-                            ref={(input: TitleInput) => { this.titleInput = input; }}
-                            value={this.state.title}
-                            onChange={newTitle => {
-                                this.setState({title: newTitle});
-                            }}
-                        />
-                        {note.getId() && <DeleteMenu onClick={this.props.onDeleteNote} />}
-                    </div>
-
-                    <Divider/>
-
-                    <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        minHeight: 10,
-                    }}>
-                        {tagChips}
-                    </div>
-
-                    <Divider/>
-
-                    <BodyInput
-                        ref={(input: BodyInput) => { this.bodyInput = input; }}
-                        value={this.state.body}
-                        onChange={(newValue: string, newSelectionStart: number, newSelectionEnd: number) => {
-                            this.props.onChangeNote(this.state.title, newValue, newSelectionStart, newSelectionEnd);
-                        }}
-                    />
-                </Paper>
-
-                <Snackbar
-                    open={this.state.showSaveNotifier}
-                    message="Note(s) saved."
-                    autoHideDuration={2500}
-                    onRequestClose={() => {this.setState({showSaveNotifier: false});}}
-                />
-
-                <div style={Object.assign({}, AppStyles.textBase, {
-                    width: '100%',
-                    height: 20,
-                    position: 'fixed',
-                    right: 5,
-                    bottom: 5,
-                    textAlign: 'right',
-                    fontSize: '10px',
-                    color: grey500,
-                })}>
-                    {
-                        `${this.state.selectionStart}:${this.state.selectionEnd}`
-                        // `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`
-                        // + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`
-                        // + `(${bodyLines} lines)`
-                    }
-                </div>
-            </div>
-        );
 
         function DeleteMenu(props: any) {
             return (
@@ -172,5 +99,79 @@ export default class NoteEditor extends React.PureComponent<Props, State> {
                 </IconMenu>
             );
         }
+
+        return (
+            <div
+                className="note-editor"
+                style={{ marginLeft: this.props.marginLeft }}
+            >
+                <Paper
+                    zDepth={1}
+                    rounded={false}
+                    style={{margin: '8px'}}
+                >
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            backgroundColor: note.getId() ? white : yellow100,
+                        }}
+                    >
+                        <TitleInput
+                            ref={(input: TitleInput) => { this.titleInput = input; }}
+                            value={this.state.title}
+                            onChange={newTitle => {
+                                this.setState({title: newTitle});
+                            }}
+                        />
+                        {note.getId() && <DeleteMenu onClick={this.props.onDeleteNote} />}
+                    </div>
+
+                    <Divider/>
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            minHeight: 10,
+                        }}
+                    >
+                        {tagChips}
+                    </div>
+
+                    <Divider/>
+
+                    <BodyInput
+                        ref={(input: BodyInput) => { this.bodyInput = input; }}
+                        value={this.state.body}
+                        onChange={(newValue: string, newSelectionStart: number, newSelectionEnd: number) => {
+                            this.props.onChangeNote(this.state.title, newValue, newSelectionStart, newSelectionEnd);
+                        }}
+                    />
+                </Paper>
+
+                <Snackbar
+                    open={this.state.showSaveNotifier}
+                    message="Note(s) saved."
+                    autoHideDuration={2500}
+                    onRequestClose={() => {this.setState({showSaveNotifier: false}); }}
+                />
+
+                <div
+                    style={Object.assign({}, AppStyles.textBase, {
+                        width: '100%',
+                        height: 20,
+                        position: 'fixed',
+                        right: 5,
+                        bottom: 5,
+                        textAlign: 'right',
+                        fontSize: '10px',
+                        color: grey500,
+                    })}
+                >
+                    {`${this.state.selectionStart}:${this.state.selectionEnd}` /* `[${this.state.selectionStart}:L${lineStart.num}(${lineStart.indent})${lineStart.bullet},`// + `${this.state.selectionEnd}:L${lineEnd.num}(${lineEnd.indent})${lineEnd.bullet}]`// + `(${bodyLines} lines)` */}
+                </div>
+            </div>
+        );
     }
 }

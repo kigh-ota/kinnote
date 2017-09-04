@@ -1,22 +1,21 @@
+import update = require('immutability-helper');
+import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles';
 import * as React from 'react';
 import Note from '../domain/model/Note';
-import NoteSelector from './NoteSelector';
-import {getMuiTheme, lightBaseTheme, MuiThemeProvider} from 'material-ui/styles';
 import NoteService from '../domain/model/NoteService';
-import NoteEditor from './NoteEditor';
-import update = require('immutability-helper');
 import Timestamp from '../domain/model/Timestamp';
 import FloatingToolBar from './FloatingToolBar';
+import NoteEditor from './NoteEditor';
+import NoteSelector from './NoteSelector';
 
 export const AppStyles = {
     textBase: {
         fontFamily: 'Monaco, monospace',
         fontSize: 12,
-    }
+    },
 };
 
-interface Props {
-}
+interface Props {}
 
 interface State {
     noteIdInEdit: NoteStateId;
@@ -29,8 +28,8 @@ export interface NoteState {
     id: NoteStateId;
     title: string;
     body: string;
-    createdAt: Timestamp,
-    updatedAt: Timestamp,
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
 export default class NoteApp extends React.PureComponent<Props, State> {
@@ -80,23 +79,21 @@ export default class NoteApp extends React.PureComponent<Props, State> {
         });
     }
 
-    render() {
+    public render() {
         const noteSelectWidth = 300;
 
         return (
             <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
                 <div
                     onKeyDown={(e: any) => {
-                        // Ctrl+S
                         if ((e.key === 'S' || e.key === 's') && e.ctrlKey) {
+                            // Ctrl+S
                             this.noteEditor.saveNote();
-                        }
-                        // Ctrl+N
-                        else if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
+                        } else if ((e.key === 'N' || e.key === 'n') && e.ctrlKey) {
+                            // Ctrl+N
                             this.noteEditor.createNewNote();
-                        }
-                        // Ctrl+/
-                        else if (e.key === '/' && e.ctrlKey) {
+                        } else if (e.key === '/' && e.ctrlKey) {
+                            // Ctrl+/
                             this.noteSelector.focusFilterInput();
                         }
                     }}
@@ -126,12 +123,10 @@ export default class NoteApp extends React.PureComponent<Props, State> {
 
                             // Cursor position needs to be manually updated,
                             // because it is automatically changed after setState().
-                            this.noteEditor.setState({
-                                title: title,
-                                body: body,
-                                selectionStart: selectionStart,
-                                selectionEnd: selectionEnd,
-                            }, this.noteEditor.forceBodyInputSelectionStates.bind(this.noteEditor, selectionStart, selectionEnd));
+                            this.noteEditor.setState(
+                                {title, body, selectionStart, selectionEnd},
+                                this.noteEditor.forceBodyInputSelectionStates.bind(this.noteEditor, selectionStart, selectionEnd)
+                            );
                             return;
                         }}
                         onSaveNote={(title: string, body: string) => {
